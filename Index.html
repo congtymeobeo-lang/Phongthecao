@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PhongCard Gift Hub</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin:0; background:#0f1724; color:#fff; }
+    header { background:#1e293b; padding:10px 20px; display:flex; justify-content:space-between; align-items:center; }
+    header h1 { margin:0; font-size:20px; color:#38bdf8; }
+    nav button { background:none; border:0; color:#fff; margin-left:10px; cursor:pointer; }
+    main { padding:20px; }
+    .card { background:#1e293b; padding:15px; border-radius:10px; margin-bottom:15px; }
+    input, button { padding:8px; border-radius:6px; border:none; margin-top:6px; }
+    button { background:#38bdf8; color:#000; font-weight:bold; cursor:pointer; }
+    #wheel { width:250px; height:250px; border-radius:50%; border:8px solid #38bdf8; margin:20px auto; display:flex; align-items:center; justify-content:center; transition:transform 3s ease-out; }
+    .hidden { display:none; }
+    .history-item { background:#0f172a; padding:8px; border-radius:6px; margin:5px 0; font-size:14px; }
+    table { width:100%; border-collapse:collapse; margin-top:10px; }
+    th, td { border:1px solid #38bdf8; padding:6px; text-align:left; font-size:14px; }
+    th { background:#0f233a; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🎁 PhongCard Hub</h1>
+    <nav>
+      <button onclick="showPage('login')">Đăng nhập</button>
+      <button onclick="showPage('gift')">Nhập code</button>
+      <button onclick="showPage('wheel')">Vòng quay</button>
+      <button onclick="showPage('history')">Lịch sử</button>
+      <button onclick="showPage('admin')">Admin</button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Đăng nhập -->
+    <section id="login" class="card">
+      <h2>Đăng nhập / Đăng ký</h2>
+      <input type="text" id="username" placeholder="Tên tài khoản">
+      <input type="password" id="password" placeholder="Mật khẩu (nếu có)">
+      <button onclick="login()">Xác nhận</button>
+    </section>
+
+    <!-- Nhập code -->
+    <section id="gift" class="card hidden">
+      <h2>Nhập Giftcode</h2>
+      <input type="text" id="giftcode" placeholder="Nhập code...">
+      <button onclick="redeemCode()">Xác nhận</button>
+      <p id="giftMsg"></p>
+    </section>
+
+    <!-- Vòng quay -->
+    <section id="wheel" class="card hidden">
+      <h2>Vòng quay may mắn</h2>
+      <div id="wheel">🎡</div>
+      <button onclick="spinWheel()">Quay ngay</button>
+      <p id="spinMsg"></p>
+    </section>
+
+    <!-- Lịch sử -->
+    <section id="history" class="card hidden">
+      <h2>Lịch sử nhận thưởng</h2>
+      <div id="historyList"></div>
+    </section>
+
+    <!-- Admin -->
+    <section id="admin" class="card hidden">
+      <h2>Admin Dashboard</h2>
+      <div id="adminPanel" class="hidden">
+        <h3>Danh sách người chơi</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Tài khoản</th>
+              <th>Lượt quay</th>
+              <th>Code đã dùng</th>
+              <th>Lịch sử thưởng</th>
+            </tr>
+          </thead>
+          <tbody id="userTable"></tbody>
+        </table>
+      </div>
+      <p id="adminMsg"></p>
+    </section>
+  </main>
+
+  <script>
+    // --- Giftcode list (30 code sẵn) ---
+    const giftcodes = [
+      "PHONGCARD001","PHONGCARD002","PHONGCARD003","PHONGCARD004","PHONGCARD005",
+      "PHONGCARD006","PHONGCARD007","PHONGCARD008","PHONGCARD009","PHONGCARD010",
+      "PHONGCARD011","PHONGCARD012","PHONGCARD013","PHONGCARD014","PHONGCARD015",
+      "PHONGCARD016","PHONGCARD017","PHONGCARD018","PHONGCARD019","PHONGCARD020",
+      "PHONGCARD021","PHONGCARD022","PHONGCARD023","PHONGCARD024","PHONGCARD025",
+      "PHONGCARD026","PHONGCARD027","PHONGCARD028","PHONGCARD029","PHONGCARD030"
+    ];
+
+    let currentUser = null;
+    let isAdmin = false;
+    let data = JSON.parse(localStorage.getItem("giftHub") || "{}");
+
+    function saveData() {
+      localStorage.setItem("giftHub", JSON.stringify(data));
+    }
+
+    function showPage(id) {
+      document.querySelectorAll("main section").forEach(s => s.classList.add("hidden"));
+      document.getElementById(id).classList.remove("hidden");
+      if (id === "history") loadHistory();
+      if (id === "admin" && isAdmin) loadAdmin();
+    }
+
+    // Đăng nhập
+    function login() {
+      const user = document.getElementById("username").value.trim();
+      const pass = document.getElementById("password").value.trim();
+
+      if (!user) return alert("Nhập tên tài khoản!");
+
+      // admin login
+      if (user === "admin" && pass === "phong123") {
+        currentUser = "admin";
+        isAdmin = true;
+        document.getElementById("adminMsg").innerText = "✅ Admin đăng nhập thành công!";
+        document.getElementById("adminPanel").classList.remove("hidden");
+        saveData();
+        return;
+      }
+
+      currentUser = user;
+      if (!data[user]) data[user] = { spins:0, history:[], usedCodes:[] };
+      isAdmin = false;
+      saveData();
+      alert("Xin chào, " + user + "!");
+    }
+
+    // Redeem code
+    function redeemCode() {
+      if (!currentUser || isAdmin) return alert("Đăng nhập bằng tài khoản thường!");
+      const code = document.getElementById("giftcode").value.trim().toUpperCase();
+      if (!giftcodes.includes(code)) {
+        document.getElementById("giftMsg").innerText = "❌ Code không hợp lệ!";
+        return;
+      }
+      if (data[currentUser].usedCodes.includes(code)) {
+        document.getElementById("giftMsg").innerText = "⚠️ Code này đã dùng!";
+        return;
+      }
+      data[currentUser].spins++;
+      data[currentUser].usedCodes.push(code);
+      saveData();
+      document.getElementById("giftMsg").innerText = "✅ Nhận thành công 1 lượt quay!";
+    }
+
+    // Vòng quay
+    function spinWheel() {
+      if (!currentUser || isAdmin) return alert("Đăng nhập bằng tài khoản thường!");
+      if (data[currentUser].spins <= 0) {
+        document.getElementById("spinMsg").innerText = "Bạn chưa có lượt quay!";
+        return;
+      }
+      data[currentUser].spins--;
+
+      const prizes = [
+        "💵 2,000 VND", "💵 3,000 VND", "💵 5,000 VND", "💵 7,000 VND",
+        "🎮 Acc Blox Fruit (Demo)", "📖 Câu chuyện: Hành trình của Phong"
+      ];
+      const result = prizes[Math.floor(Math.random()*prizes.length)];
+      document.getElementById("spinMsg").innerText = "🎉 Bạn nhận: " + result;
+      data[currentUser].history.push({ prize: result, time: new Date().toLocaleString() });
+      saveData();
+    }
+
+    // Lịch sử
+    function loadHistory() {
+      if (!currentUser || isAdmin) return;
+      const list = document.getElementById("historyList");
+      list.innerHTML = "";
+      data[currentUser].history.forEach(h => {
+        const div = document.createElement("div");
+        div.className = "history-item";
+        div.innerText = h.time + " → " + h.prize;
+        list.appendChild(div);
+      });
+    }
+
+    // Admin dashboard
+    function loadAdmin() {
+      const table = document.getElementById("userTable");
+      table.innerHTML = "";
+      for (let user in data) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${user}</td>
+          <td>${data[user].spins}</td>
+          <td>${data[user].usedCodes.join(", ") || "Chưa dùng"}</td>
+          <td>
+            ${data[user].history.map(h => h.time + " → " + h.prize).join("<br>")}
+          </td>
+        `;
+        table.appendChild(tr);
+      }
+    }
+  </script>
+</body>
+  </html>
