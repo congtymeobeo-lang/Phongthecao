@@ -1,40 +1,415 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PhongCard Gift Hub</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin:0; background:#0f1724; color:#fff; }
-    header { background:#1e293b; padding:10px 20px; display:flex; justify-content:space-between; align-items:center; }
-    header h1 { margin:0; font-size:20px; color:#38bdf8; }
-    nav button { background:none; border:0; color:#fff; margin-left:10px; cursor:pointer; }
-    main { padding:20px; }
-    .card { background:#1e293b; padding:15px; border-radius:10px; margin-bottom:15px; }
-    input, button { padding:8px; border-radius:6px; border:none; margin-top:6px; }
-    button { background:#38bdf8; color:#000; font-weight:bold; cursor:pointer; }
-    #wheel { width:250px; height:250px; border-radius:50%; border:8px solid #38bdf8; margin:20px auto; display:flex; align-items:center; justify-content:center; transition:transform 3s ease-out; }
-    .hidden { display:none; }
-    .history-item { background:#0f172a; padding:8px; border-radius:6px; margin:5px 0; font-size:14px; }
-    table { width:100%; border-collapse:collapse; margin-top:10px; }
-    th, td { border:1px solid #38bdf8; padding:6px; text-align:left; font-size:14px; }
-    th { background:#0f233a; }
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>PhongCard — Gift Hub</title>
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#071026; --card:#0d1b2a; --muted:#9fb3c8; --accent:#6ee7b7; --accent2:#60a5fa;
+    --glass: rgba(255,255,255,0.03);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter,system-ui,Arial;background:
+    radial-gradient(1200px 600px at 10% 10%, rgba(96,165,250,0.06), transparent 10%),
+    radial-gradient(800px 500px at 90% 90%, rgba(110,231,183,0.04), transparent 10%),
+    var(--bg); color:#e6f0f6; -webkit-font-smoothing:antialiased;}
+  header{height:72px;display:flex;align-items:center;padding:0 18px;gap:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);backdrop-filter: blur(6px);border-bottom:1px solid rgba(255,255,255,0.02)}
+  .logo{display:flex;align-items:center;gap:12px}
+  .logo .icon{width:44px;height:44;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:700;color:#05263a}
+  .logo h1{margin:0;font-size:18px}
+  .sp {flex:1}
+  /* nav */
+  .nav {display:flex;align-items:center;gap:8px}
+  .btn-ghost{background:none;border:0;padding:8px 12px;border-radius:10px;color:var(--muted);cursor:pointer}
+  .btn-primary{background:linear-gradient(90deg,var(--accent),var(--accent2));border:0;padding:10px 14px;border-radius:10px;color:#04202b;cursor:pointer;font-weight:600}
+  /* layout */
+  .wrap{max-width:1100px;margin:26px auto;padding:12px;display:grid;grid-template-columns:1fr 360px;gap:20px}
+  .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:14px;padding:18px;border:1px solid rgba(255,255,255,0.03);box-shadow:0 6px 24px rgba(2,6,23,0.6)}
+  h2{margin:0 0 8px 0}
+  p.muted{color:var(--muted);margin:6px 0 12px 0}
+  input, select, textarea{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit;margin-top:8px}
+  .row{display:flex;gap:10px}
+  .small{font-size:13px;color:var(--muted)}
+  /* wheel */
+  .wheel-wrap{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px}
+  .wheel{width:320px;height:320px;border-radius:50%;position:relative;overflow:hidden;border:10px solid rgba(255,255,255,0.03);display:flex;align-items:center;justify-content:center;transition:transform 4s cubic-bezier(.2,.9,.2,1)}
+  .slice{position:absolute;width:50%;height:50%;left:50%;top:50%;transform-origin:0 0;display:flex;align-items:center;justify-content:center;font-weight:600}
+  .pointer{position:absolute;top:-16px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:18px solid transparent;border-right:18px solid transparent;border-bottom:28px solid var(--accent)}
+  .spin-btn{padding:12px 18px;border-radius:12px;border:0;background:linear-gradient(90deg,var(--accent2),var(--accent));color:#02202a;font-weight:700;cursor:pointer}
+  /* menu mobile */
+  .hamburger{display:none}
+  /* right column */
+  .side .box{margin-bottom:12px}
+  .history-list{max-height:360px;overflow:auto;padding:8px;background:rgba(0,0,0,0.12);border-radius:8px}
+  .history-item{padding:8px;border-radius:8px;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);margin-bottom:8px}
+  /* responsive */
+  @media(max-width:980px){
+    .wrap{grid-template-columns:1fr}
+    .hamburger{display:block}
+    .nav .hide-md{display:none}
+  }
+  /* nice micro-interactions */
+  button:active{transform:translateY(1px)}
+  .fade-in{animation:fadeIn .35s ease}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  /* small footer */
+  footer{max-width:1100px;margin:18px auto;color:var(--muted);font-size:13px;text-align:center}
+</style>
 </head>
 <body>
-  <header>
-    <h1>🎁 PhongCard Hub</h1>
-    <nav>
-      <button onclick="showPage('login')">Đăng nhập</button>
-      <button onclick="showPage('gift')">Nhập code</button>
-      <button onclick="showPage('wheel')">Vòng quay</button>
-      <button onclick="showPage('history')">Lịch sử</button>
-      <button onclick="showPage('admin')">Admin</button>
-    </nav>
-  </header>
+<header>
+  <div class="logo">
+    <div class="icon">P</div>
+    <div>
+      <h1>PhongCard Hub</h1>
+      <div class="small">Giftcode — Quay thưởng — Admin ready</div>
+    </div>
+  </div>
+  <div class="sp"></div>
+  <div class="nav">
+    <button class="btn-ghost hide-md" id="homeBtn">Home</button>
+    <button class="btn-ghost hide-md" id="redeemBtn">Nhập giftcode</button>
+    <button class="btn-ghost hide-md" id="wheelBtn">Vòng quay</button>
+    <button class="btn-ghost hide-md" id="historyBtn">Lịch sử</button>
+    <button class="btn-primary" id="authBtn">Đăng nhập</button>
+    <button class="hamburger btn-ghost" id="hambBtn">☰</button>
+  </div>
+</header>
 
-  <main>
-    <!-- Đăng nhập -->
+<main class="wrap">
+  <!-- left big column -->
+  <section class="card fade-in" id="homePage">
+    <h2>Chào mừng tới PhongCard</h2>
+    <p class="muted">Nhập giftcode dạng <code>PHONGCARDXXX</code> (có 30 code mẫu). Mỗi code cho 1 lượt quay. Vòng quay có tiền (2k–7k), acc Blox Fruits, hoặc câu chuyện.</p>
+
+    <div style="display:flex;gap:12px;flex-wrap:wrap">
+      <div style="flex:1;min-width:220px" class="card">
+        <div class="small">Tài khoản hiện tại</div>
+        <div id="userBox" style="margin-top:10px">Chưa đăng nhập</div>
+      </div>
+
+      <div style="min-width:220px" class="card">
+        <div class="small">Số lượt quay</div>
+        <div id="spinCount" style="font-weight:700;font-size:18px;margin-top:8px">0</div>
+      </div>
+    </div>
+
+    <hr style="opacity:0.06;margin:18px 0">
+
+    <div id="codesSample" class="card">
+      <div class="small">30 code mẫu (ví dụ) — paste 1 code vào trang "Nhập giftcode":</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px">
+        <!-- codes inserted by JS -->
+      </div>
+    </div>
+
+    <div style="margin-top:12px" class="card">
+      <h3>Hướng dẫn nhanh</h3>
+      <ol class="small">
+        <li>Đăng ký / đăng nhập (nút trên góc phải).</li>
+        <li>Vào "Nhập giftcode" → nhập 1 trong 30 code mẫu → nhận 1 lượt quay.</li>
+        <li>Vào "Vòng quay" → nhấn Quay để trúng thưởng.</li>
+        <li>Xem lịch sử phần thưởng ở mục "Lịch sử".</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- right column -->
+  <aside class="side">
+    <div class="card box">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div class="small">Nhập giftcode</div>
+          <div style="margin-top:8px;display:flex;gap:8px">
+            <input id="giftInput" placeholder="VD: PHONGCARD001">
+            <button class="btn-primary" id="redeemDo">Nhận</button>
+          </div>
+          <div id="redeemMsg" class="small" style="margin-top:8px;color:#cde"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card box">
+      <div class="small">Vòng quay</div>
+      <div class="wheel-wrap" style="margin-top:10px">
+        <div class="pointer"></div>
+        <div class="wheel" id="wheel">
+          <!-- slices generated by JS -->
+        </div>
+        <button class="spin-btn" id="spinBtn">Quay ngay</button>
+        <div id="spinMsg" class="small" style="margin-top:8px"></div>
+      </div>
+    </div>
+
+    <div class="card box">
+      <div class="small">Lịch sử gần đây</div>
+      <div class="history-list" id="historyBox">
+        <!-- history items -->
+      </div>
+    </div>
+  </aside>
+</main>
+
+<footer>
+  Phiên bản demo — Dữ liệu lưu trên trình duyệt (LocalStorage). Admin page: <code>/admin.html</code> (user: <b>admin</b>, pass: <b>phong123</b>)
+</footer>
+
+<script>
+/* ---------- DATA & STATE ---------- */
+const STORAGE_KEY = 'phong_gift_v1';
+let db = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+
+/* ensure structures */
+if (!db.users) db.users = {};       // users: { username: {pass, spins, history:[], usedCodes:[] } }
+if (!db.codes) db.codes = [];       // available codes array
+if (!db.accounts) db.accounts = []; // demo accounts (blox)
+save();
+
+/* create 30 sample codes only once */
+if (db.codes.length === 0) {
+  for(let i=1;i<=30;i++){
+    const n = String(i).padStart(3,'0');
+    db.codes.push('PHONGCARD' + n);
+  }
+  // add some demo Blox accounts
+  db.accounts.push({name:'BF_Max_001',desc:'Max LV full Beli, demo'});
+  db.accounts.push({name:'BF_Speedster',desc:'V4, CDK God (demo)'});
+  save();
+}
+
+/* current session */
+let currentUser = localStorage.getItem(STORAGE_KEY + '_session') || null;
+
+/* ---------- UI refs ---------- */
+const userBox = document.getElementById('userBox');
+const spinCount = document.getElementById('spinCount');
+const codesSampleWrap = document.querySelector('#codesSample > div');
+const giftInput = document.getElementById('giftInput');
+const redeemMsg = document.getElementById('redeemMsg');
+const historyBox = document.getElementById('historyBox');
+const wheelEl = document.getElementById('wheel');
+const spinBtn = document.getElementById('spinBtn');
+const spinMsg = document.getElementById('spinMsg');
+
+/* menu buttons */
+document.getElementById('homeBtn').addEventListener('click', ()=> scrollToTop());
+document.getElementById('redeemBtn').addEventListener('click', ()=> focusGift());
+document.getElementById('wheelBtn').addEventListener('click', ()=> scrollWheel());
+document.getElementById('historyBtn').addEventListener('click', ()=> scrollHistory());
+
+/* auth button */
+document.getElementById('authBtn').addEventListener('click', ()=> openAuthModal());
+
+/* redeem / spin handlers */
+document.getElementById('redeemDo').addEventListener('click', redeemCode);
+spinBtn.addEventListener('click', spinWheel);
+
+/* render initial UI */
+renderSamples();
+renderUserState();
+renderWheel();
+renderHistory();
+
+/* ---------- FUNCTIONS ---------- */
+
+function save(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(db)); }
+function saveSession(){ if(currentUser) localStorage.setItem(STORAGE_KEY + '_session', currentUser); else localStorage.removeItem(STORAGE_KEY + '_session'); }
+
+function renderSamples(){
+  const container = document.querySelector('#codesSample > div');
+  container.innerHTML = ''; 
+  db.codes.slice(0,30).forEach(c=>{
+    const b = document.createElement('div');
+    b.style.padding='6px 8px';
+    b.style.borderRadius='8px';
+    b.style.background='linear-gradient(180deg, rgba(255,255,255,0.01), transparent)';
+    b.style.border='1px solid rgba(255,255,255,0.02)';
+    b.style.cursor='pointer';
+    b.style.fontSize='13px';
+    b.innerText = c;
+    b.addEventListener('click', ()=> { giftInput.value = c; });
+    container.appendChild(b);
+  });
+}
+
+function renderUserState(){
+  if (currentUser && db.users[currentUser]) {
+    userBox.innerHTML = `<div style="font-weight:700">${currentUser}</div><div class="small">Đăng nhập</div>`;
+    spinCount.innerText = db.users[currentUser].spins || 0;
+  } else {
+    userBox.innerHTML = `<div class="small">Chưa đăng nhập</div><div style="margin-top:8px"><button class="btn-primary" onclick="openAuthModal()">Đăng nhập / ĐK</button></div>`;
+    spinCount.innerText = '0';
+  }
+}
+
+function openAuthModal(){
+  // simple prompt modal -> register/login flows
+  const action = prompt("Chọn: 1 = Đăng ký mới, 2 = Đăng nhập, 3 = Đăng xuất (nếu đang đăng nhập)\nNhập 1/2/3:");
+  if (!action) return;
+  if (action === '1') {
+    const u = prompt("Tên tài khoản (không dấu, viết liền):");
+    if (!u) return alert('Hủy');
+    if (db.users[u]) return alert('Tài khoản tồn tại!');
+    const p = prompt("Mật khẩu:");
+    if (!p) return alert('Hủy');
+    db.users[u] = { pass: p, spins: 0, history: [], usedCodes: [] };
+    save();
+    alert('Đăng ký thành công! Bấm OK để đăng nhập.');
+    currentUser = u; saveSession(); renderUserState(); renderHistory();
+  } else if (action === '2') {
+    const u = prompt("Tên tài khoản:");
+    if (!u) return;
+    const p = prompt("Mật khẩu:");
+    if (!p) return;
+    if (!db.users[u] || db.users[u].pass !== p) return alert('Sai thông tin!');
+    currentUser = u; saveSession(); renderUserState(); renderHistory();
+    alert('Đăng nhập thành công: ' + u);
+  } else if (action === '3') {
+    if (!currentUser) return alert('Bạn chưa đăng nhập');
+    if (!confirm('Bạn muốn đăng xuất?')) return;
+    currentUser = null; saveSession(); renderUserState(); renderHistory();
+    alert('Đã đăng xuất');
+  } else alert('Không hợp lệ');
+}
+
+/* Redeem code logic */
+function redeemCode(){
+  if (!currentUser || !db.users[currentUser]) return alert('Hãy đăng nhập trước!');
+  const code = (giftInput.value || '').trim().toUpperCase();
+  if (!code) return redeemMsg.innerText = 'Nhập code đã nhé';
+  const idx = db.codes.indexOf(code);
+  if (idx === -1) {
+    redeemMsg.innerText = '❌ Code không hợp lệ hoặc đã dùng';
+    return;
+  }
+  // mark used by user
+  db.users[currentUser].spins = (db.users[currentUser].spins || 0) + 1;
+  db.users[currentUser].usedCodes = db.users[currentUser].usedCodes || [];
+  db.users[currentUser].usedCodes.push(code);
+  // remove code globally so can't be reused
+  db.codes.splice(idx,1);
+  save();
+  renderUserState();
+  renderSamples();
+  redeemMsg.innerText = `✅ Nhận 1 lượt quay! Bạn có ${db.users[currentUser].spins} lượt.`;
+}
+
+/* Wheel rendering + spin */
+const wheelPrizes = [
+  {type:'money', label:'2,000 VND', value:2000},
+  {type:'money', label:'3,000 VND', value:3000},
+  {type:'money', label:'5,000 VND', value:5000},
+  {type:'money', label:'7,000 VND', value:7000},
+  {type:'acc', label:'Acc Blox Fruit', value:0},
+  {type:'story', label:'Câu chuyện: Hành trình của Phong', value:0}
+];
+
+function renderWheel(){
+  wheelEl.innerHTML = '';
+  const colors = ['#065f46','#0ea5a4','#0284c7','#7c3aed','#d946ef','#f59e0b'];
+  const sliceCount = wheelPrizes.length;
+  for(let i=0;i<sliceCount;i++){
+    const slice = document.createElement('div');
+    slice.className = 'slice';
+    const angle = 360/sliceCount * i;
+    slice.style.transform = `rotate(${angle}deg) translate(-50%, -50%)`;
+    slice.style.width = '60%';
+    slice.style.height = '60%';
+    slice.style.left = '50%';
+    slice.style.top = '50%';
+    slice.style.background = `conic-gradient(${colors[i % colors.length]} 0 100%)`;
+    slice.style.clipPath = 'polygon(0 0, 100% 0, 0 100%)';
+    slice.style.display = 'flex';
+    slice.style.justifyContent = 'flex-start';
+    slice.style.paddingLeft = '30%';
+    slice.style.color = '#012';
+    slice.style.fontWeight = '700';
+    slice.innerHTML = `<div style="transform:rotate(${90 + (360/sliceCount)*0.5}deg);">${wheelPrizes[i].label}</div>`;
+    wheelEl.appendChild(slice);
+  }
+}
+
+/* spin handling */
+let spinning = false;
+function spinWheel(){
+  if (!currentUser || !db.users[currentUser]) return alert('Hãy đăng nhập trước!');
+  if (spinning) return;
+  if ((db.users[currentUser].spins || 0) <= 0) return alert('Bạn chưa có lượt quay!');
+  spinning = true;
+  spinMsg.innerText = 'Đang quay...';
+  // random pick prize
+  const idx = Math.floor(Math.random() * wheelPrizes.length);
+  // rotation: full spins + to target segment
+  const single = 360 / wheelPrizes.length;
+  const target = 360 * (4 + Math.random()*2) + (idx * single) + single/2;
+  wheelEl.style.transition = 'transform 4s cubic-bezier(.2,.9,.2,1)';
+  wheelEl.style.transform = `rotate(${target}deg)`;
+  // reduce spin count
+  db.users[currentUser].spins--;
+  // after animation
+  setTimeout(()=> {
+    spinning = false;
+    wheelEl.style.transition = '';
+    // normalize transform (keep visual but reset rotation modulo 360)
+    const finalDeg = target % 360;
+    wheelEl.style.transform = `rotate(${finalDeg}deg)`;
+    // award prize
+    const prize = wheelPrizes[idx];
+    let prizeText = '';
+    if (prize.type === 'money') {
+      prizeText = `Tiền ${prize.label}`;
+    } else if (prize.type === 'acc') {
+      // assign a demo account if available
+      const acc = db.accounts.length ? db.accounts.shift() : {name:'AccDemo_Empty', desc:'(Hết acc mẫu)'};
+      prizeText = `Acc Blox Fruit: ${acc.name} — ${acc.desc}`;
+    } else if (prize.type === 'story') {
+      prizeText = `Câu chuyện: Hành trình của Phong (demo)`;
+    }
+    // record
+    db.users[currentUser].history = db.users[currentUser].history || [];
+    const rec = { prize: prizeText, time: new Date().toLocaleString() };
+    db.users[currentUser].history.unshift(rec);
+    save();
+    renderUserState();
+    renderHistory();
+    spinMsg.innerText = `🎉 Bạn nhận: ${prizeText}`;
+  }, 4100);
+}
+
+/* history */
+function renderHistory(){
+  historyBox.innerHTML = '';
+  if (!currentUser || !db.users[currentUser]) {
+    historyBox.innerHTML = `<div class="small">Đăng nhập để xem lịch sử</div>`;
+    return;
+  }
+  const list = db.users[currentUser].history || [];
+  if (list.length === 0) {
+    historyBox.innerHTML = `<div class="small">Chưa có phần thưởng nào</div>`;
+    return;
+  }
+  list.slice(0,30).forEach(h=>{
+    const div = document.createElement('div');
+    div.className = 'history-item';
+    div.innerHTML = `<div style="font-weight:700">${h.prize}</div><div class="small" style="margin-top:6px">${h.time}</div>`;
+    historyBox.appendChild(div);
+  });
+}
+
+/* nice helpers */
+function scrollToTop(){ window.scrollTo({top:0,behavior:'smooth'}); }
+function focusGift(){ document.getElementById('giftInput').focus(); }
+function scrollWheel(){ const el = document.querySelector('.wheel-wrap'); if (el) el.scrollIntoView({behavior:'smooth'}); }
+function scrollHistory(){ document.querySelector('#historyBox').scrollIntoView({behavior:'smooth'}); }
+
+/* expose some functions for console/test */
+window._PHONG = { db, save, current: ()=>currentUser, login: (u,p)=>{ if (db.users[u] && db.users[u].pass===p){ currentUser=u; saveSession(); renderUserState(); renderHistory(); return true } return false } }
+</script>
+</body>
+</html>    <!-- Đăng nhập -->
     <section id="login" class="card">
       <h2>Đăng nhập / Đăng ký</h2>
       <input type="text" id="username" placeholder="Tên tài khoản">
