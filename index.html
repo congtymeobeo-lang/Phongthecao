@@ -1,798 +1,181 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>PhongCard — Siêu cấp tinh xảo</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --bg:#061021; --card:#0f1a2a; --glass:rgba(255,255,255,0.03);
-    --muted:#9fb3c8; --accent1:#60a5fa; --accent2:#6ee7b7; --accent3:#a78bfa;
-    --success:#10b981; --danger:#fb7185;
-  }
-  *{box-sizing:border-box}
-  body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:#e6f2fb;background:
-    radial-gradient(800px 400px at 10% 10%, rgba(96,165,250,0.04), transparent 10%),
-    radial-gradient(600px 300px at 90% 90%, rgba(110,231,183,0.03), transparent 10%),
-    var(--bg); -webkit-font-smoothing:antialiased}
-  /* header */
-  header{height:72px;display:flex;align-items:center;gap:12px;padding:0 18px;border-bottom:1px solid rgba(255,255,255,0.02);backdrop-filter: blur(6px)}
-  .brand{display:flex;align-items:center;gap:12px}
-  .logo{width:48px;height:48;border-radius:10px;background:linear-gradient(135deg,var(--accent2),var(--accent3));display:flex;align-items:center;justify-content:center;font-weight:800;color:#05202a}
-  .site-title{font-size:18px;margin:0}
-  .site-sub{font-size:12px;color:var(--muted);margin-top:2px}
-  .sp{flex:1}
-  nav{display:flex;gap:8px;align-items:center}
-  .btn{padding:8px 12px;border-radius:10px;border:0;background:transparent;color:var(--muted);cursor:pointer}
-  .btn:hover{color:#fff}
-  .btn-primary{background:linear-gradient(90deg,var(--accent2),var(--accent1));color:#022; font-weight:700;padding:8px 14px;border-radius:10px;cursor:pointer}
-  .hamb{display:none}
-  @media(max-width:980px){ .hide-sm{display:none} .hamb{display:block} }
-  /* layout */
-  .container{max-width:1100px;margin:22px auto;padding:12px;display:grid;grid-template-columns:1fr 380px;gap:18px}
-  @media(max-width:980px){ .container{grid-template-columns:1fr;padding:12px 14px} }
-  .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:14px;padding:18px;border:1px solid rgba(255,255,255,0.03);box-shadow:0 8px 30px rgba(2,6,23,0.55)}
-  h2{margin:0 0 10px 0}
-  p.muted{color:var(--muted);margin:6px 0 12px 0}
-  input, select, textarea{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit;margin-top:8px}
-  .row{display:flex;gap:10px}
-  .small{font-size:13px;color:var(--muted)}
-  /* wheel */
-  .wheel-wrap{display:flex;flex-direction:column;align-items:center;gap:12px}
-  .wheel{width:320px;height:320px;border-radius:50%;position:relative;overflow:hidden;border:8px solid rgba(255,255,255,0.03);display:flex;align-items:center;justify-content:center;transition:transform 4s cubic-bezier(.2,.9,.2,1)}
-  .pointer{position:relative;top:-18px;width:0;height:0;border-left:18px solid transparent;border-right:18px solid transparent;border-bottom:28px solid var(--accent2);z-index:4}
-  .slice{position:absolute;width:50%;height:50%;left:50%;top:50%;transform-origin:0 0;display:flex;align-items:center;justify-content:center;font-weight:700}
-  .spin-btn{padding:12px 18px;border-radius:12px;border:0;background:linear-gradient(90deg,var(--accent1),var(--accent2));color:#022;font-weight:800;cursor:pointer;box-shadow:0 8px 20px rgba(96,165,250,0.12)}
-  /* list */
-  .history-list{max-height:340px;overflow:auto;padding:8px;background:rgba(0,0,0,0.10);border-radius:10px}
-  .history-item{padding:10px;border-radius:8px;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);margin-bottom:8px}
-  /* shop intro */
-  .hero{display:flex;gap:18px;align-items:center}
-  .hero .left{flex:1}
-  .hero .cover{width:140px;height:110px;border-radius:12px;background:linear-gradient(135deg,var(--accent3),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:800;color:#022;font-size:18px}
-  /* footer small */
-  footer{max-width:1100px;margin:18px auto;color:var(--muted);font-size:13px;text-align:center}
-  /* modal */
-  .modal-back{position:fixed;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:80}
-  .modal{width:420px;max-width:94%;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:12px;padding:18px;border:1px solid rgba(255,255,255,0.03)}
-  .flex{display:flex;gap:8px}
-  /* micro */
-  .chip{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.02);font-weight:700}
-  .ok{color:var(--success)} .bad{color:var(--danger)}
-  .fade{animation:fadeIn .28s ease}
-  @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Giftcode Web</title>
+  <style>
+    * {margin:0;padding:0;box-sizing:border-box;font-family:Arial, sans-serif;}
+    body {background:#111;color:#fff;overflow-x:hidden;}
+    .hidden {display:none;}
+    .center {display:flex;align-items:center;justify-content:center;}
+    .page {padding:20px;animation:fadeIn .5s;}
+    @keyframes fadeIn {from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+    /* Loading */
+    #loading {position:fixed;top:0;left:0;width:100%;height:100%;background:#111;color:#fff;z-index:9999;display:none;align-items:center;justify-content:center;font-size:22px;}
+    /* Bottom Menu */
+    nav {position:fixed;bottom:0;left:0;width:100%;height:60px;background:#222;display:flex;justify-content:space-around;align-items:center;box-shadow:0 -2px 6px rgba(0,0,0,.5);}
+    nav button {flex:1;background:none;border:none;color:#aaa;font-size:14px;transition:.3s;cursor:pointer;padding:10px;}
+    nav button.active {color:#fff;font-weight:bold;}
+    nav button:active {transform:scale(0.95);}
+    /* Auth */
+    #auth {height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+    #auth input {margin:8px 0;padding:10px;width:80%;border-radius:6px;border:none;}
+    #auth button {margin:8px 0;padding:10px 20px;border:none;border-radius:6px;cursor:pointer;background:#28a745;color:#fff;font-size:16px;}
+    #auth h2 {margin-bottom:20px;}
+    /* Wheel */
+    #wheel {width:250px;height:250px;border-radius:50%;border:10px solid #fff;position:relative;overflow:hidden;transition:transform 5s cubic-bezier(0.17,0.67,0.83,0.67);}
+    #wheel div {position:absolute;width:50%;height:50%;background:#f39c12;transform-origin:100% 100%;text-align:center;line-height:120px;font-weight:bold;color:#000;}
+    #spin {margin-top:20px;padding:10px 20px;background:#e74c3c;border:none;border-radius:6px;color:#fff;font-size:16px;cursor:pointer;}
+    /* Result Popup */
+    #resultPopup {position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);background:#222;padding:20px;border-radius:10px;color:#fff;text-align:center;z-index:10000;transition:.4s;}
+    #resultPopup.show {transform:translate(-50%,-50%) scale(1);}
+    /* Giftcode */
+    #giftcode input {padding:10px;width:70%;border:none;border-radius:6px;margin-right:10px;}
+    #giftcode button {padding:10px 15px;border:none;border-radius:6px;background:#3498db;color:#fff;cursor:pointer;}
+    /* History */
+    #history ul {list-style:none;padding:0;}
+    #history li {padding:10px;margin:5px 0;background:#333;border-radius:6px;animation:fadeIn .5s;}
+  </style>
 </head>
 <body>
-<header>
-  <div class="brand">
-    <div class="logo">P</div>
-    <div>
-      <div class="site-title">PhongCard</div>
-      <div class="site-sub">Shop giftcode — Quay thưởng — Tinh xảo</div>
-    </div>
+
+<div id="loading" class="center">Đang tải...</div>
+
+<!-- Auth Page -->
+<div id="auth">
+  <h2>Đăng nhập / Đăng ký</h2>
+  <input type="text" id="username" placeholder="Tài khoản">
+  <input type="password" id="password" placeholder="Mật khẩu">
+  <button onclick="register()">Đăng ký</button>
+  <button onclick="login()">Đăng nhập</button>
+</div>
+
+<!-- Main Pages -->
+<div id="app" class="hidden">
+  <div id="home" class="page"> 
+    <h2>Trang chủ</h2>
+    <p>Chào mừng bạn đến với Shop Giftcode 🎉</p>
   </div>
-  <div class="sp"></div>
-  <nav>
-    <button class="btn hide-sm" id="navHome">Trang chủ</button>
-    <button class="btn hide-sm" id="navRedeem">Nhập giftcode</button>
-    <button class="btn hide-sm" id="navWheel">Vòng quay</button>
-    <button class="btn hide-sm" id="navHistory">Lịch sử</button>
-    <button class="btn-primary" id="btnAuth">Đăng nhập</button>
-    <button class="hamb" id="hambBtn">☰</button>
-  </nav>
-</header>
+  <div id="giftcode" class="page hidden">
+    <h2>Nhập Giftcode</h2>
+    <input type="text" id="codeInput" placeholder="Nhập code...">
+    <button onclick="redeemCode()">Xác nhận</button>
+  </div>
+  <div id="spinPage" class="page hidden center" style="flex-direction:column;">
+    <h2>Vòng quay may mắn</h2>
+    <div id="wheel"></div>
+    <button id="spin" onclick="spinWheel()">Quay</button>
+  </div>
+  <div id="history" class="page hidden">
+    <h2>Lịch sử phần thưởng</h2>
+    <ul id="historyList"></ul>
+  </div>
+  <div id="account" class="page hidden">
+    <h2>Tài khoản</h2>
+    <p id="accInfo"></p>
+    <button onclick="logout()">Đăng xuất</button>
+  </div>
+</div>
 
-<main class="container">
-  <!-- left: dashboard -->
-  <section id="home" class="card fade">
-    <div class="hero">
-      <div class="left">
-        <h2>Chào mừng đến PhongCard — Shop giftcode tinh xảo</h2>
-        <p class="muted">Trang này là shop giả lập: dashboard sạch (không show code). Đăng nhập để nhập giftcode bạn có và quay thưởng. Dữ liệu lưu trên trình duyệt của bạn (LocalStorage).</p>
-        <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap">
-          <div class="card" style="min-width:180px">
-            <div class="small">Tài khoản</div>
-            <div id="userInfo" style="font-weight:700;margin-top:8px">Chưa đăng nhập</div>
-          </div>
-          <div class="card" style="min-width:180px">
-            <div class="small">Lượt quay</div>
-            <div id="spinCount" style="font-weight:800;font-size:18px;margin-top:8px">0</div>
-          </div>
-        </div>
-      </div>
-      <div class="cover">SHOP</div>
-    </div>
+<!-- Bottom Menu -->
+<nav id="menu" class="hidden">
+  <button onclick="showPage('home')">🏠 Home</button>
+  <button onclick="showPage('giftcode')">📜 Giftcode</button>
+  <button onclick="showPage('spinPage')">🎁 Quay</button>
+  <button onclick="showPage('history')">📖 Lịch sử</button>
+  <button onclick="showPage('account')">👤 Tài khoản</button>
+</nav>
 
-    <hr style="opacity:0.06;margin:16px 0">
-
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px">
-      <div class="card">
-        <h3>Giới thiệu</h3>
-        <p class="small">PhongCard bán giftcode/khuyến mãi. Giao diện hiện đại, vận hành mượt. Mỗi giftcode có thể là: PHONGCARD (lượt quay), PHONGVIP (bonus), PHONGGIFT (tiền trực tiếp).</p>
-      </div>
-      <div class="card">
-        <h3>Tỷ lệ vòng quay</h3>
-        <p class="small">Kết quả quay theo tỷ lệ bạn đặt:</p>
-        <ul class="small">
-          <li><b>10%</b> → 7,000 VND</li>
-          <li><b>20%</b> → 5,000 VND</li>
-          <li><b>40%</b> → Các mệnh giá khác: 2,000 / 3,000 / 4,000</li>
-          <li><b>30%</b> → Câu chuyện (random)</li>
-        </ul>
-      </div>
-      <div class="card">
-        <h3>Ghi chú</h3>
-        <p class="small">Dashboard không hiển thị mã. Bạn có thể phát code riêng, gửi cho khách. Mỗi code chỉ dùng 1 lần.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- right column: controls -->
-  <aside>
-    <div class="card fade" style="margin-bottom:12px">
-      <div class="small">Nhập giftcode</div>
-      <div style="display:flex;gap:8px;margin-top:8px">
-        <input id="inputCode" placeholder="Nhập code (ví dụ PHONGCARD001)">
-        <button class="btn-primary" id="btnRedeem">Nhận code</button>
-      </div>
-      <div id="redeemMsg" class="small" style="margin-top:8px"></div>
-    </div>
-
-    <div class="card fade">
-      <div class="small">Vòng quay may mắn</div>
-      <div class="wheel-wrap" style="margin-top:12px">
-        <div class="pointer"></div>
-        <div id="wheel" class="wheel" aria-hidden="true"></div>
-        <div style="display:flex;gap:8px;margin-top:12px;justify-content:center">
-          <button class="spin-btn" id="btnSpin">Quay ngay</button>
-        </div>
-        <div id="spinResult" class="small" style="margin-top:10px"></div>
-      </div>
-    </div>
-
-    <div class="card fade" style="margin-top:12px">
-      <div class="small">Lịch sử gần đây</div>
-      <div id="history" class="history-list" style="margin-top:10px">Chưa có lịch sử</div>
-    </div>
-  </aside>
-</main>
-
-<footer>Phiên bản demo — Dữ liệu lưu trên trình duyệt. Muốn lưu server-side thì mình tích hợp Firebase.</footer>
-
-<!-- AUTH / MESSAGES MODAL (hidden) -->
-<div id="modalRoot" style="display:none"></div>
+<!-- Result Popup -->
+<div id="resultPopup"></div>
 
 <script>
-/* =========================
-   DATA MODEL (LocalStorage)
-   ========================= */
-const KEY = 'phongcard_v2';
-let DB = JSON.parse(localStorage.getItem(KEY) || '{}');
-if (!DB.users) DB.users = {};       // { username: { pass, spins, history:[], vipBoost:false } }
-if (!DB.usedCodes) DB.usedCodes = []; // global used codes
-if (!DB.stories) DB.stories = [
-  "Câu chuyện: Phong và chuyến hành trình xuyên đêm...",
-  "Câu chuyện: Một lần vào server lạ, Phong tìm thấy kho báu...",
-  "Câu chuyện: Lời nhắn bí mật trong thẻ cào..."
-];
-saveDB();
-
-// session
-let current = localStorage.getItem(KEY + '_session') || null;
-
-/* -------------------
-   UTILS
-   ------------------- */
-function saveDB(){ localStorage.setItem(KEY, JSON.stringify(DB)); }
-function saveSession(){ if (current) localStorage.setItem(KEY + '_session', current); else localStorage.removeItem(KEY + '_session'); }
-
-/* -------------------
-   UI refs
-   ------------------- */
-const userInfo = document.getElementById('userInfo');
-const spinCountEl = document.getElementById('spinCount');
-const inputCode = document.getElementById('inputCode');
-const redeemMsg = document.getElementById('redeemMsg');
-const historyEl = document.getElementById('history');
-const wheelEl = document.getElementById('wheel');
-const spinResult = document.getElementById('spinResult');
-
-/* -------------------
-   INITIAL RENDER
-   ------------------- */
-renderUser();
-renderHistory();
-renderWheel();
-
-/* ====================
-   NAV / AUTH
-   ==================== */
-document.getElementById('btnAuth').addEventListener('click', openAuth);
-document.getElementById('navHome').addEventListener('click', ()=>window.scrollTo({top:0,behavior:'smooth'}));
-document.getElementById('navRedeem').addEventListener('click', ()=>inputCode.focus());
-document.getElementById('navWheel').addEventListener('click', ()=>wheelEl.scrollIntoView({behavior:'smooth'}));
-document.getElementById('navHistory').addEventListener('click', ()=>historyEl.scrollIntoView({behavior:'smooth'}));
-document.getElementById('hambBtn').addEventListener('click', ()=> {
-  const choice = prompt("Menu: 1=Trang chủ, 2=Nhập code, 3=Vòng quay, 4=Lịch sử, 5=Đăng nhập/ĐK. Nhập số:");
-  if (!choice) return;
-  if (choice==='1') window.scrollTo({top:0,behavior:'smooth'});
-  if (choice==='2') inputCode.focus();
-  if (choice==='3') wheelEl.scrollIntoView({behavior:'smooth'});
-  if (choice==='4') historyEl.scrollIntoView({behavior:'smooth'});
-  if (choice==='5') openAuth();
-});
-
-/* ====================
-   GIFT CODE LOGIC
-   ==================== */
-/*
- Three types (format examples):
-  - PHONGCARD###  => +1 spin
-  - PHONGVIP###   => +2 spins + vipBoost true (one-time boost)
-  - PHONGGIFT###  => direct money reward (2k-7k)
- Each code one-time global (DB.usedCodes)
-*/
-function normalizeCode(s){ return (s||'').trim().toUpperCase(); }
-
-document.getElementById('btnRedeem').addEventListener('click', ()=> {
-  const raw = normalizeCode(inputCode.value);
-  if (!current) return showTemp(redeemMsg, "Vui lòng đăng nhập trước!", true);
-  if (!raw) return showTemp(redeemMsg, "Nhập code đã nhé", true);
-  if (DB.usedCodes.includes(raw)) return showTemp(redeemMsg, "Code đã được dùng", true);
-
-  // validation patterns
-  if (/^PHONGCARD\d{1,6}$/.test(raw)) {
-    // +1 spin
-    DB.usedCodes.push(raw);
-    DB.users[current].spins = (DB.users[current].spins||0) + 1;
-    saveDB(); renderUser(); showTemp(redeemMsg, "Nhận 1 lượt quay! Chúc bạn may mắn 🎉");
-    inputCode.value='';
-    return;
+  let currentUser=null;
+  let users=JSON.parse(localStorage.getItem("users")||"{}");
+  let prizes=[
+    {text:"7,000đ",chance:10},
+    {text:"5,000đ",chance:20},
+    {text:"2,000đ",chance:20},
+    {text:"3,000đ",chance:10},
+    {text:"4,000đ",chance:10},
+    {text:"Câu chuyện",chance:30}
+  ];
+  function saveUsers(){localStorage.setItem("users",JSON.stringify(users));}
+  function register(){
+    let u=document.getElementById("username").value;
+    let p=document.getElementById("password").value;
+    if(!u||!p){alert("Nhập đủ tài khoản và mật khẩu!");return;}
+    if(users[u]){alert("Tài khoản đã tồn tại!");return;}
+    users[u]={password:p,history:[],spins:0};
+    saveUsers();alert("Đăng ký thành công!");}
+  function login(){
+    let u=document.getElementById("username").value;
+    let p=document.getElementById("password").value;
+    if(users[u]&&users[u].password===p){currentUser=u;localStorage.setItem("currentUser",u);loadApp();}
+    else alert("Sai tài khoản hoặc mật khẩu!");}
+  function loadApp(){
+    document.getElementById("auth").classList.add("hidden");
+    document.getElementById("app").classList.remove("hidden");
+    document.getElementById("menu").classList.remove("hidden");
+    document.getElementById("accInfo").innerText="Xin chào, "+currentUser;
+    showPage("home");renderHistory();}
+  function logout(){localStorage.removeItem("currentUser");location.reload();}
+  function showPage(id){
+    document.getElementById("loading").style.display="flex";
+    setTimeout(()=>{
+      document.querySelectorAll("#app .page").forEach(p=>p.classList.add("hidden"));
+      document.getElementById(id).classList.remove("hidden");
+      document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
+      [...document.querySelectorAll("nav button")].find(b=>b.textContent.includes(id.charAt(0).toUpperCase())).classList.add("active");
+      document.getElementById("loading").style.display="none";
+    },500);
   }
-  if (/^PHONGVIP\d{1,6}$/.test(raw)) {
-    DB.usedCodes.push(raw);
-    DB.users[current].spins = (DB.users[current].spins||0) + 2;
-    DB.users[current].vipBoost = true; // next spin will get boosted (we'll apply by slightly increasing chance of higher rewards)
-    saveDB(); renderUser(); showTemp(redeemMsg, "PHONGVIP: +2 lượt & 1 VIP boost cho lần quay tiếp theo! 🚀");
-    inputCode.value='';
-    return;
+  function redeemCode(){
+    let code=document.getElementById("codeInput").value.trim();
+    if(!code){alert("Nhập code!");return;}
+    users[currentUser].spins=(users[currentUser].spins||0)+1;
+    saveUsers();alert("Đã nhận 1 lượt quay!");document.getElementById("codeInput").value="";
   }
-  if (/^PHONGGIFT\d{1,6}$/.test(raw)) {
-    DB.usedCodes.push(raw);
-    // direct money 2k-7k random
-    const values = [2000,3000,4000,5000,7000];
-    const money = values[Math.floor(Math.random()*values.length)];
-    const rec = { prize: `${money.toLocaleString()} VND (Giftcode)`, time: new Date().toLocaleString() };
-    DB.users[current].history = DB.users[current].history || [];
-    DB.users[current].history.unshift(rec);
-    saveDB(); renderHistory(); showTemp(redeemMsg, `Bạn nhận ${money.toLocaleString()} VND từ PHONGGIFT 🎉`);
-    inputCode.value='';
-    return;
+  let spinning=false;
+  function spinWheel(){
+    if(spinning)return;
+    if(users[currentUser].spins<=0){alert("Bạn chưa có lượt quay!");return;}
+    spinning=true;
+    users[currentUser].spins--;saveUsers();
+    let total=prizes.reduce((a,b)=>a+b.chance,0);
+    let r=Math.random()*total,sum=0,result;
+    for(let p of prizes){sum+=p.chance;if(r<sum){result=p.text;break;}}
+    let wheel=document.getElementById("wheel");
+    let deg=3600+Math.floor(Math.random()*360);
+    wheel.style.transform="rotate("+deg+"deg)";
+    setTimeout(()=>{
+      showResult(result);
+      users[currentUser].history.push(result);
+      saveUsers();renderHistory();spinning=false;
+    },5000);
   }
-  showTemp(redeemMsg, "Code không hợp lệ hoặc định dạng không đúng.", true);
-});
-
-/* ====================
-   WHEEL (probabilities)
-   ====================
-   We implement weighted random so final distribution approximates:
-   - 10% -> 7k
-   - 20% -> 5k
-   - 40% -> other mệnh giá (split among 2k,3k,4k)
-   - 30% -> story
-   VIP boost slightly increases chance for 7k and 5k for next spin
-*/
-const PRIZE_BUCKETS = [
-  {id:'7k', label:'7,000 VND', weight:10, type:'money', value:7000},
-  {id:'5k', label:'5,000 VND', weight:20, type:'money', value:5000},
-  // split 40% into three items (approx)
-  {id:'4k', label:'4,000 VND', weight:14, type:'money', value:4000},
-  {id:'3k', label:'3,000 VND', weight:13, type:'money', value:3000},
-  {id:'2k', label:'2,000 VND', weight:13, type:'money', value:2000},
-  {id:'story', label:'Câu chuyện bí ẩn', weight:30, type:'story', value:0}
-];
-
-function weightedPick(boost=false){
-  // If boost true (for PHONGVIP), increase high-tier weights slightly
-  const items = PRIZE_BUCKETS.map(it=>{
-    const w = boost && it.id==='7k' ? it.weight + 6 : boost && it.id==='5k' ? it.weight + 4 : it.weight;
-    return {...it, weight:w};
-  });
-  const total = items.reduce((s,it)=>s+it.weight,0);
-  let r = Math.random()*total;
-  for (let it of items){
-    if (r < it.weight) return it;
-    r -= it.weight;
+  function showResult(t){
+    let pop=document.getElementById("resultPopup");
+    pop.innerText="Bạn nhận được: "+t;
+    pop.classList.add("show");
+    setTimeout(()=>pop.classList.remove("show"),2500);
   }
-  return items[items.length-1];
-}
-
-/* Render wheel visuals (slices) */
-function renderWheel(){
-  wheelEl.innerHTML = '';
-  const slices = PRIZE_BUCKETS;
-  const n = slices.length;
-  const colors = ['#065f46','#0ea5a4','#0284c7','#7c3aed','#d946ef','#f59e0b'];
-  for (let i=0;i<n;i++){
-    const s = document.createElement('div');
-    s.className = 'slice';
-    const angle = 360/n * i;
-    s.style.transform = `rotate(${angle}deg) translate(-50%,-50%)`;
-    s.style.width = '60%';
-    s.style.height = '60%';
-    s.style.left = '50%';
-    s.style.top = '50%';
-    s.style.background = colors[i % colors.length];
-    s.style.clipPath = 'polygon(0 0, 100% 0, 0 100%)';
-    s.style.display = 'flex';
-    s.style.alignItems = 'center';
-    s.style.justifyContent = 'flex-start';
-    s.style.paddingLeft = '28%';
-    s.style.color = '#022';
-    s.style.fontWeight = '800';
-    // rotate label so it's readable
-    const label = document.createElement('div');
-    label.style.transform = `rotate(${90 + (360/n)*0.5}deg)`;
-    label.innerText = slices[i].label;
-    s.appendChild(label);
-    wheelEl.appendChild(s);
+  function renderHistory(){
+    let list=document.getElementById("historyList");
+    list.innerHTML="";
+    (users[currentUser].history||[]).forEach(item=>{
+      let li=document.createElement("li");
+      li.innerText=item;
+      list.appendChild(li);
+    });
   }
-}
-
-/* handle spin animation + pick based on weights */
-let spinning = false;
-document.getElementById('btnSpin').addEventListener('click', async ()=>{
-  if (!current) return alert('Đăng nhập để quay!');
-  if (!DB.users[current] || (DB.users[current].spins||0) <= 0) return alert('Bạn chưa có lượt quay. Nhập giftcode để lấy lượt!');
-  if (spinning) return;
-  spinning = true;
-  spinResult.innerText = 'Đang quay...';
-  // apply VIP boost if present, and flip vipBoost flag after applying
-  const boost = DB.users[current].vipBoost === true;
-  if (boost) DB.users[current].vipBoost = false;
-  // pick prize index based on weightedPick
-  const chosen = weightedPick(boost);
-  // compute target rotation
-  const idx = PRIZE_BUCKETS.findIndex(p=>p.id===chosen.id);
-  const single = 360 / PRIZE_BUCKETS.length;
-  // random full rotations + land on chosen slice center
-  const rotations = 4 + Math.floor(Math.random()*3); // 4..6
-  const targetDeg = rotations*360 + idx*single + single/2 + (Math.random()*single - single/2);
-  wheelEl.style.transition = 'transform 4s cubic-bezier(.2,.9,.2,1)';
-  wheelEl.style.transform = `rotate(${targetDeg}deg)`;
-  // consume spin immediately
-  DB.users[current].spins = Math.max(0, (DB.users[current].spins||0) - 1);
-  saveDB(); renderUser();
-  // after animation finalize
-  setTimeout(()=>{
-    // normalize rotation to finalDeg for visual continuity
-    const finalDeg = targetDeg % 360;
-    wheelEl.style.transition = '';
-    wheelEl.style.transform = `rotate(${finalDeg}deg)`;
-    // award prize
-    let prizeText = '';
-    if (chosen.type === 'money') {
-      prizeText = `${chosen.value.toLocaleString()} VND`;
-      DB.users[current].balance = (DB.users[current].balance || 0) + chosen.value;
-    } else if (chosen.type === 'story') {
-      const s = DB.stories[Math.floor(Math.random()*DB.stories.length)];
-      prizeText = s;
-    }
-    const rec = { prize: prizeText, type: chosen.type, value: chosen.type==='money'?chosen.value:0, time: new Date().toLocaleString() };
-    DB.users[current].history = DB.users[current].history || [];
-    DB.users[current].history.unshift(rec);
-    saveDB();
-    renderUser();
-    renderHistory();
-    spinResult.innerText = `🎉 Bạn nhận: ${prizeText}`;
-    spinning = false;
-  }, 4200);
-});
-
-/* ====================
-   HISTORY & UI render
-   ==================== */
-function renderHistory(){
-  historyEl.innerHTML = '';
-  if (!current || !DB.users[current] || !DB.users[current].history || DB.users[current].history.length===0){
-    historyEl.innerHTML = '<div class="small">Chưa có lịch sử — quay xong sẽ lưu ở đây.</div>'; return;
-  }
-  DB.users[current].history.slice(0,40).forEach(h=>{
-    const div = document.createElement('div');
-    div.className = 'history-item';
-    div.innerHTML = `<div style="font-weight:700">${h.prize}</div><div class="small" style="margin-top:6px">${h.time}</div>`;
-    historyEl.appendChild(div);
-  });
-}
-
-/* render user block */
-function renderUser(){
-  if (current && DB.users[current]) {
-    userInfo.innerHTML = `${current} <div class="small" style="margin-top:6px">Số dư: ${ (DB.users[current].balance||0).toLocaleString() } VND</div>`;
-    spinCountEl.innerText = (DB.users[current].spins||0);
-    document.getElementById('btnAuth').innerText = 'Tài khoản';
-    document.getElementById('btnAuth').onclick = openAccountMenu;
-  } else {
-    userInfo.innerHTML = 'Chưa đăng nhập';
-    spinCountEl.innerText = '0';
-    document.getElementById('btnAuth').innerText = 'Đăng nhập';
-    document.getElementById('btnAuth').onclick = openAuth;
-  }
-}
-
-/* quick show message then clear */
-function showTemp(el, text, isErr=false){
-  el.innerText = text; el.style.color = isErr? 'var(--danger)':'var(--accent2)';
-  setTimeout(()=>{ if (el) { el.innerText=''; el.style.color=''; } }, 5000);
-}
-
-/* AUTH modal / flow */
-function openAuth(){
-  const m = document.createElement('div'); m.className='modal-back';
-  m.innerHTML = `<div class="modal fade">
-    <h3>Đăng nhập hoặc Đăng ký</h3>
-    <div style="margin-top:8px">
-      <input id="authUser" placeholder="Tên tài khoản (không dấu)"><input id="authPass" placeholder="Mật khẩu" style="margin-top:8px">
-      <div style="display:flex;gap:8px;margin-top:12px">
-        <button id="doLogin" class="btn-primary">Đăng nh= ''; 
-  db.codes.slice(0,30).forEach(c=>{
-    const b = document.createElement('div');
-    b.style.padding='6px 8px';
-    b.style.borderRadius='8px';
-    b.style.background='linear-gradient(180deg, rgba(255,255,255,0.01), transparent)';
-    b.style.border='1px solid rgba(255,255,255,0.02)';
-    b.style.cursor='pointer';
-    b.style.fontSize='13px';
-    b.innerText = c;
-    b.addEventListener('click', ()=> { giftInput.value = c; });
-    container.appendChild(b);
-  });
-}
-
-function renderUserState(){
-  if (currentUser && db.users[currentUser]) {
-    userBox.innerHTML = `<div style="font-weight:700">${currentUser}</div><div class="small">Đăng nhập</div>`;
-    spinCount.innerText = db.users[currentUser].spins || 0;
-  } else {
-    userBox.innerHTML = `<div class="small">Chưa đăng nhập</div><div style="margin-top:8px"><button class="btn-primary" onclick="openAuthModal()">Đăng nhập / ĐK</button></div>`;
-    spinCount.innerText = '0';
-  }
-}
-
-function openAuthModal(){
-  // simple prompt modal -> register/login flows
-  const action = prompt("Chọn: 1 = Đăng ký mới, 2 = Đăng nhập, 3 = Đăng xuất (nếu đang đăng nhập)\nNhập 1/2/3:");
-  if (!action) return;
-  if (action === '1') {
-    const u = prompt("Tên tài khoản (không dấu, viết liền):");
-    if (!u) return alert('Hủy');
-    if (db.users[u]) return alert('Tài khoản tồn tại!');
-    const p = prompt("Mật khẩu:");
-    if (!p) return alert('Hủy');
-    db.users[u] = { pass: p, spins: 0, history: [], usedCodes: [] };
-    save();
-    alert('Đăng ký thành công! Bấm OK để đăng nhập.');
-    currentUser = u; saveSession(); renderUserState(); renderHistory();
-  } else if (action === '2') {
-    const u = prompt("Tên tài khoản:");
-    if (!u) return;
-    const p = prompt("Mật khẩu:");
-    if (!p) return;
-    if (!db.users[u] || db.users[u].pass !== p) return alert('Sai thông tin!');
-    currentUser = u; saveSession(); renderUserState(); renderHistory();
-    alert('Đăng nhập thành công: ' + u);
-  } else if (action === '3') {
-    if (!currentUser) return alert('Bạn chưa đăng nhập');
-    if (!confirm('Bạn muốn đăng xuất?')) return;
-    currentUser = null; saveSession(); renderUserState(); renderHistory();
-    alert('Đã đăng xuất');
-  } else alert('Không hợp lệ');
-}
-
-/* Redeem code logic */
-function redeemCode(){
-  if (!currentUser || !db.users[currentUser]) return alert('Hãy đăng nhập trước!');
-  const code = (giftInput.value || '').trim().toUpperCase();
-  if (!code) return redeemMsg.innerText = 'Nhập code đã nhé';
-  const idx = db.codes.indexOf(code);
-  if (idx === -1) {
-    redeemMsg.innerText = '❌ Code không hợp lệ hoặc đã dùng';
-    return;
-  }
-  // mark used by user
-  db.users[currentUser].spins = (db.users[currentUser].spins || 0) + 1;
-  db.users[currentUser].usedCodes = db.users[currentUser].usedCodes || [];
-  db.users[currentUser].usedCodes.push(code);
-  // remove code globally so can't be reused
-  db.codes.splice(idx,1);
-  save();
-  renderUserState();
-  renderSamples();
-  redeemMsg.innerText = `✅ Nhận 1 lượt quay! Bạn có ${db.users[currentUser].spins} lượt.`;
-}
-
-/* Wheel rendering + spin */
-const wheelPrizes = [
-  {type:'money', label:'2,000 VND', value:2000},
-  {type:'money', label:'3,000 VND', value:3000},
-  {type:'money', label:'5,000 VND', value:5000},
-  {type:'money', label:'7,000 VND', value:7000},
-  {type:'acc', label:'Acc Blox Fruit', value:0},
-  {type:'story', label:'Câu chuyện: Hành trình của Phong', value:0}
-];
-
-function renderWheel(){
-  wheelEl.innerHTML = '';
-  const colors = ['#065f46','#0ea5a4','#0284c7','#7c3aed','#d946ef','#f59e0b'];
-  const sliceCount = wheelPrizes.length;
-  for(let i=0;i<sliceCount;i++){
-    const slice = document.createElement('div');
-    slice.className = 'slice';
-    const angle = 360/sliceCount * i;
-    slice.style.transform = `rotate(${angle}deg) translate(-50%, -50%)`;
-    slice.style.width = '60%';
-    slice.style.height = '60%';
-    slice.style.left = '50%';
-    slice.style.top = '50%';
-    slice.style.background = `conic-gradient(${colors[i % colors.length]} 0 100%)`;
-    slice.style.clipPath = 'polygon(0 0, 100% 0, 0 100%)';
-    slice.style.display = 'flex';
-    slice.style.justifyContent = 'flex-start';
-    slice.style.paddingLeft = '30%';
-    slice.style.color = '#012';
-    slice.style.fontWeight = '700';
-    slice.innerHTML = `<div style="transform:rotate(${90 + (360/sliceCount)*0.5}deg);">${wheelPrizes[i].label}</div>`;
-    wheelEl.appendChild(slice);
-  }
-}
-
-/* spin handling */
-let spinning = false;
-function spinWheel(){
-  if (!currentUser || !db.users[currentUser]) return alert('Hãy đăng nhập trước!');
-  if (spinning) return;
-  if ((db.users[currentUser].spins || 0) <= 0) return alert('Bạn chưa có lượt quay!');
-  spinning = true;
-  spinMsg.innerText = 'Đang quay...';
-  // random pick prize
-  const idx = Math.floor(Math.random() * wheelPrizes.length);
-  // rotation: full spins + to target segment
-  const single = 360 / wheelPrizes.length;
-  const target = 360 * (4 + Math.random()*2) + (idx * single) + single/2;
-  wheelEl.style.transition = 'transform 4s cubic-bezier(.2,.9,.2,1)';
-  wheelEl.style.transform = `rotate(${target}deg)`;
-  // reduce spin count
-  db.users[currentUser].spins--;
-  // after animation
-  setTimeout(()=> {
-    spinning = false;
-    wheelEl.style.transition = '';
-    // normalize transform (keep visual but reset rotation modulo 360)
-    const finalDeg = target % 360;
-    wheelEl.style.transform = `rotate(${finalDeg}deg)`;
-    // award prize
-    const prize = wheelPrizes[idx];
-    let prizeText = '';
-    if (prize.type === 'money') {
-      prizeText = `Tiền ${prize.label}`;
-    } else if (prize.type === 'acc') {
-      // assign a demo account if available
-      const acc = db.accounts.length ? db.accounts.shift() : {name:'AccDemo_Empty', desc:'(Hết acc mẫu)'};
-      prizeText = `Acc Blox Fruit: ${acc.name} — ${acc.desc}`;
-    } else if (prize.type === 'story') {
-      prizeText = `Câu chuyện: Hành trình của Phong (demo)`;
-    }
-    // record
-    db.users[currentUser].history = db.users[currentUser].history || [];
-    const rec = { prize: prizeText, time: new Date().toLocaleString() };
-    db.users[currentUser].history.unshift(rec);
-    save();
-    renderUserState();
-    renderHistory();
-    spinMsg.innerText = `🎉 Bạn nhận: ${prizeText}`;
-  }, 4100);
-}
-
-/* history */
-function renderHistory(){
-  historyBox.innerHTML = '';
-  if (!currentUser || !db.users[currentUser]) {
-    historyBox.innerHTML = `<div class="small">Đăng nhập để xem lịch sử</div>`;
-    return;
-  }
-  const list = db.users[currentUser].history || [];
-  if (list.length === 0) {
-    historyBox.innerHTML = `<div class="small">Chưa có phần thưởng nào</div>`;
-    return;
-  }
-  list.slice(0,30).forEach(h=>{
-    const div = document.createElement('div');
-    div.className = 'history-item';
-    div.innerHTML = `<div style="font-weight:700">${h.prize}</div><div class="small" style="margin-top:6px">${h.time}</div>`;
-    historyBox.appendChild(div);
-  });
-}
-
-/* nice helpers */
-function scrollToTop(){ window.scrollTo({top:0,behavior:'smooth'}); }
-function focusGift(){ document.getElementById('giftInput').focus(); }
-function scrollWheel(){ const el = document.querySelector('.wheel-wrap'); if (el) el.scrollIntoView({behavior:'smooth'}); }
-function scrollHistory(){ document.querySelector('#historyBox').scrollIntoView({behavior:'smooth'}); }
-
-/* expose some functions for console/test */
-window._PHONG = { db, save, current: ()=>currentUser, login: (u,p)=>{ if (db.users[u] && db.users[u].pass===p){ currentUser=u; saveSession(); renderUserState(); renderHistory(); return true } return false } }
+  // Auto login
+  let saved=localStorage.getItem("currentUser");
+  if(saved&&users[saved]){currentUser=saved;loadApp();}
+  // Build wheel slices
+  let wheel=document.getElementById("wheel");let angle=0;
+  prizes.forEach((p,i)=>{let d=document.createElement("div");d.style.transform="rotate("+angle+"deg)";d.style.background=i%2?"#f1c40f":"#e67e22";d.innerText=p.text;wheel.appendChild(d);angle+=60;});
 </script>
 </body>
-</html>    <!-- Đăng nhập -->
-    <section id="login" class="card">
-      <h2>Đăng nhập / Đăng ký</h2>
-      <input type="text" id="username" placeholder="Tên tài khoản">
-      <input type="password" id="password" placeholder="Mật khẩu (nếu có)">
-      <button onclick="login()">Xác nhận</button>
-    </section>
-
-    <!-- Nhập code -->
-    <section id="gift" class="card hidden">
-      <h2>Nhập Giftcode</h2>
-      <input type="text" id="giftcode" placeholder="Nhập code...">
-      <button onclick="redeemCode()">Xác nhận</button>
-      <p id="giftMsg"></p>
-    </section>
-
-    <!-- Vòng quay -->
-    <section id="wheel" class="card hidden">
-      <h2>Vòng quay may mắn</h2>
-      <div id="wheel">🎡</div>
-      <button onclick="spinWheel()">Quay ngay</button>
-      <p id="spinMsg"></p>
-    </section>
-
-    <!-- Lịch sử -->
-    <section id="history" class="card hidden">
-      <h2>Lịch sử nhận thưởng</h2>
-      <div id="historyList"></div>
-    </section>
-
-    <!-- Admin -->
-    <section id="admin" class="card hidden">
-      <h2>Admin Dashboard</h2>
-      <div id="adminPanel" class="hidden">
-        <h3>Danh sách người chơi</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Tài khoản</th>
-              <th>Lượt quay</th>
-              <th>Code đã dùng</th>
-              <th>Lịch sử thưởng</th>
-            </tr>
-          </thead>
-          <tbody id="userTable"></tbody>
-        </table>
-      </div>
-      <p id="adminMsg"></p>
-    </section>
-  </main>
-
-  <script>
-    // --- Giftcode list (30 code sẵn) ---
-    const giftcodes = [
-      "PHONGCARD001","PHONGCARD002","PHONGCARD003","PHONGCARD004","PHONGCARD005",
-      "PHONGCARD006","PHONGCARD007","PHONGCARD008","PHONGCARD009","PHONGCARD010",
-      "PHONGCARD011","PHONGCARD012","PHONGCARD013","PHONGCARD014","PHONGCARD015",
-      "PHONGCARD016","PHONGCARD017","PHONGCARD018","PHONGCARD019","PHONGCARD020",
-      "PHONGCARD021","PHONGCARD022","PHONGCARD023","PHONGCARD024","PHONGCARD025",
-      "PHONGCARD026","PHONGCARD027","PHONGCARD028","PHONGCARD029","PHONGCARD030"
-    ];
-
-    let currentUser = null;
-    let isAdmin = false;
-    let data = JSON.parse(localStorage.getItem("giftHub") || "{}");
-
-    function saveData() {
-      localStorage.setItem("giftHub", JSON.stringify(data));
-    }
-
-    function showPage(id) {
-      document.querySelectorAll("main section").forEach(s => s.classList.add("hidden"));
-      document.getElementById(id).classList.remove("hidden");
-      if (id === "history") loadHistory();
-      if (id === "admin" && isAdmin) loadAdmin();
-    }
-
-    // Đăng nhập
-    function login() {
-      const user = document.getElementById("username").value.trim();
-      const pass = document.getElementById("password").value.trim();
-
-      if (!user) return alert("Nhập tên tài khoản!");
-
-      // admin login
-      if (user === "admin" && pass === "phong123") {
-        currentUser = "admin";
-        isAdmin = true;
-        document.getElementById("adminMsg").innerText = "✅ Admin đăng nhập thành công!";
-        document.getElementById("adminPanel").classList.remove("hidden");
-        saveData();
-        return;
-      }
-
-      currentUser = user;
-      if (!data[user]) data[user] = { spins:0, history:[], usedCodes:[] };
-      isAdmin = false;
-      saveData();
-      alert("Xin chào, " + user + "!");
-    }
-
-    // Redeem code
-    function redeemCode() {
-      if (!currentUser || isAdmin) return alert("Đăng nhập bằng tài khoản thường!");
-      const code = document.getElementById("giftcode").value.trim().toUpperCase();
-      if (!giftcodes.includes(code)) {
-        document.getElementById("giftMsg").innerText = "❌ Code không hợp lệ!";
-        return;
-      }
-      if (data[currentUser].usedCodes.includes(code)) {
-        document.getElementById("giftMsg").innerText = "⚠️ Code này đã dùng!";
-        return;
-      }
-      data[currentUser].spins++;
-      data[currentUser].usedCodes.push(code);
-      saveData();
-      document.getElementById("giftMsg").innerText = "✅ Nhận thành công 1 lượt quay!";
-    }
-
-    // Vòng quay
-    function spinWheel() {
-      if (!currentUser || isAdmin) return alert("Đăng nhập bằng tài khoản thường!");
-      if (data[currentUser].spins <= 0) {
-        document.getElementById("spinMsg").innerText = "Bạn chưa có lượt quay!";
-        return;
-      }
-      data[currentUser].spins--;
-
-      const prizes = [
-        "💵 2,000 VND", "💵 3,000 VND", "💵 5,000 VND", "💵 7,000 VND",
-        "🎮 Acc Blox Fruit (Demo)", "📖 Câu chuyện: Hành trình của Phong"
-      ];
-      const result = prizes[Math.floor(Math.random()*prizes.length)];
-      document.getElementById("spinMsg").innerText = "🎉 Bạn nhận: " + result;
-      data[currentUser].history.push({ prize: result, time: new Date().toLocaleString() });
-      saveData();
-    }
-
-    // Lịch sử
-    function loadHistory() {
-      if (!currentUser || isAdmin) return;
-      const list = document.getElementById("historyList");
-      list.innerHTML = "";
-      data[currentUser].history.forEach(h => {
-        const div = document.createElement("div");
-        div.className = "history-item";
-        div.innerText = h.time + " → " + h.prize;
-        list.appendChild(div);
-      });
-    }
-
-    // Admin dashboard
-    function loadAdmin() {
-      const table = document.getElementById("userTable");
-      table.innerHTML = "";
-      for (let user in data) {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${user}</td>
-          <td>${data[user].spins}</td>
-          <td>${data[user].usedCodes.join(", ") || "Chưa dùng"}</td>
-          <td>
-            ${data[user].history.map(h => h.time + " → " + h.prize).join("<br>")}
-          </td>
-        `;
-        table.appendChild(tr);
-      }
-    }
-  </script>
-</body>
-                </html>
+</html>
