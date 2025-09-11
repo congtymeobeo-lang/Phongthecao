@@ -1,223 +1,424 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <title>Phong Dashboard</title>
-  <style>
-    * {margin:0; padding:0; box-sizing:border-box; font-family:sans-serif;}
-    body, html {height:100%; background:#111; color:#fff; overflow:hidden;}
-    .hidden {display:none;}
-    .center {display:flex; align-items:center; justify-content:center; height:100%; flex-direction:column;}
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>PhongCard — Siêu cấp (Coin + Mini-game)</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#071026; --card:#0f1a2a; --muted:#9fb3c8;
+  --accent1:#60a5fa; --accent2:#6ee7b7; --accent3:#a78bfa;
+  --good:#10b981; --bad:#fb7185;
+  --glass: rgba(255,255,255,0.03);
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:#e6f2fb;background:var(--bg);-webkit-font-smoothing:antialiased}
+.container{max-width:960px;margin:10px auto;padding:12px;min-height:calc(100vh - 88px);display:grid;grid-template-columns:1fr 340px;gap:14px}
+@media(max-width:900px){ .container{grid-template-columns:1fr;padding:8px} .right-col{order:2} .left-col{order:1} }
 
-    /* Loading */
-    #loading {position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;z-index:99;font-size:22px;}
-    #loading.hidden {display:none;}
+/* header */
+header{height:64px;display:flex;align-items:center;padding:8px 14px;border-bottom:1px solid rgba(255,255,255,0.03);gap:12px}
+.logo{width:44px;height:44;border-radius:10px;background:linear-gradient(135deg,var(--accent2),var(--accent3));display:flex;align-items:center;justify-content:center;color:#042;font-weight:800}
+.brand{display:flex;flex-direction:column}
+.title{font-weight:700}
+.subtitle{font-size:12px;color:var(--muted)}
 
-    /* Sections */
-    section {position:absolute; top:0; left:0; right:0; bottom:60px; padding:20px; overflow-y:auto; display:none; animation:fade .4s;}
-    section.active {display:block;}
-    @keyframes fade {from{opacity:0;} to{opacity:1;}}
+/* card */
+.card{background:linear-gradient(180deg,var(--glass), rgba(255,255,255,0.01));padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+h2{margin:0 0 6px 0}
+.small{font-size:13px;color:var(--muted)}
 
-    /* Menu dưới */
-    .navbar {position:fixed; bottom:0; left:0; right:0; height:60px; background:#222; display:flex; justify-content:space-around; align-items:center; border-top:2px solid #444;}
-    .navbar button {background:none; border:none; color:#aaa; font-size:18px; flex:1; height:100%;}
-    .navbar button.active {color:#0f0; border-top:3px solid #0f0;}
+/* sections */
+.section{display:none;opacity:0;transform:translateY(8px);transition:all .32s ease}
+.section.active{display:block;opacity:1;transform:none}
 
-    /* Login */
-    #login-section input {margin:6px 0; padding:8px; width:220px; border-radius:8px; border:none;}
-    #login-section button {margin-top:10px; padding:8px 16px; border:none; border-radius:8px; background:#0f0; color:#000; cursor:pointer;}
+/* inputs/buttons */
+input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
+.row{display:flex;gap:8px;align-items:center}
+.btn{padding:8px 12px;border-radius:10px;border:0;cursor:pointer;background:transparent;color:var(--muted)}
+.btn:hover{opacity:0.95}
+.btn-primary{background:linear-gradient(90deg,var(--accent2),var(--accent1));color:#042;font-weight:700;border:0;padding:9px 12px;border-radius:10px;cursor:pointer;box-shadow:0 8px 20px rgba(96,165,250,0.08)}
 
-    /* Home */
-    #home {background:url('https://i.ibb.co/0m9P9t6/cat.jpg') center/cover no-repeat;}
+/* bottom nav */
+.bottom-nav{position:fixed;left:50%;transform:translateX(-50%);bottom:12px;width:min(980px,96%);display:flex;justify-content:space-between;background:linear-gradient(180deg,rgba(0,0,0,0.22),rgba(0,0,0,0.12));padding:8px;border-radius:14px;border:1px solid rgba(255,255,255,0.03);z-index:90}
+.nav-item{flex:1;text-align:center;padding:8px;border-radius:10px;color:var(--muted);cursor:pointer}
+.nav-item.active{background:linear-gradient(90deg,var(--accent2),var(--accent1));color:#022;font-weight:700}
+.nav-item .icon{font-size:18px;display:block}
 
-    /* Giftcode */
-    #giftcode input {padding:8px; border-radius:6px; border:none; margin-right:10px;}
-    #giftcode button {padding:8px 14px; border:none; border-radius:6px; background:#0f0; color:#000;}
-    .shake {animation:shake .3s;}
-    @keyframes shake {0%{transform:translateX(0);}25%{transform:translateX(-5px);}50%{transform:translateX(5px);}75%{transform:translateX(-5px);}100%{transform:translateX(0);}}
+/* wheel */
+.wheel-wrap{display:flex;flex-direction:column;align-items:center;gap:10px}
+.wheel{width:300px;height:300px;border-radius:50%;overflow:hidden;border:12px solid rgba(255,255,255,0.03);position:relative;transition:transform 4s cubic-bezier(.2,.9,.2,1)}
+.pointer{width:0;height:0;border-left:20px solid transparent;border-right:20px solid transparent;border-bottom:32px solid var(--accent2);margin-top:-12px}
+.slice{position:absolute;width:50%;height:50%;left:50%;top:50%;transform-origin:0 0;display:flex;align-items:center;justify-content:center;font-weight:700}
 
-    /* Quay */
-    #wheel {width:250px;height:250px;border-radius:50%;border:8px solid #fff;position:relative;margin:20px auto;background:conic-gradient(#f00 0 60deg,#0f0 60deg 180deg,#00f 180deg 300deg,#ff0 300deg 360deg);}
-    #pointer {width:0;height:0;border-left:15px solid transparent;border-right:15px solid transparent;border-bottom:30px solid #fff;position:absolute;top:-35px;left:calc(50% - 15px);}
-    #spin-btn {padding:10px 20px;border:none;border-radius:10px;background:#0f0;color:#000;cursor:pointer;}
-    #result {margin-top:15px;font-size:20px;}
+/* history */
+.history-list{max-height:420px;overflow:auto;padding:8px;border-radius:8px;background:rgba(0,0,0,0.06)}
+.history-item{padding:10px;border-radius:8px;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);margin-bottom:8px}
 
-    /* History */
-    #history-list {list-style:none;padding:0;}
-    #history-list li {background:#222;margin:6px 0;padding:10px;border-radius:8px;animation:fade .5s;}
+/* games */
+.game-box{display:flex;flex-direction:column;gap:10px;align-items:center}
+.dice-row{display:flex;gap:10px;align-items:center}
 
-    /* Account */
-    #account p {margin:10px 0;}
-    #logout-btn {padding:8px 16px;border:none;border-radius:8px;background:#f33;color:#fff;cursor:pointer;}
+/* uploads preview */
+.bg-preview{width:100%;height:130px;border-radius:8px;background-size:cover;background-position:center;border:1px solid rgba(255,255,255,0.03)}
 
-    /* Music button */
-    #music-btn {position:fixed;top:10px;right:10px;padding:8px 12px;border:none;border-radius:20px;background:#0f0;color:#000;cursor:pointer;z-index:50;}
-  </style>
+/* loader overlay */
+.loader-overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(2,6,23,0.6);z-index:200;opacity:0;pointer-events:none;transition:opacity .18s}
+.loader-overlay.show{opacity:1;pointer-events:auto}
+.loader-box{background:linear-gradient(90deg,var(--accent2),var(--accent1));padding:12px;border-radius:10px;color:#022;font-weight:800}
+
+/* small misc */
+.muted-note{color:var(--muted);font-size:13px}
+.ripple{position:relative;overflow:hidden}
+.ripple:after{content:"";position:absolute;width:6px;height:6px;background:rgba(255,255,255,0.15);left:50%;top:50%;transform:translate(-50%,-50%);border-radius:50%;opacity:0;transition:all .6s}
+.ripple:active:after{width:200px;height:200px;opacity:1;transition:all .6s}
+@media(max-width:760px){ .container{grid-template-columns:1fr;padding:10px} .wheel{width:260px;height:260px} .bg-preview{height:100px} }
+</style>
 </head>
 <body>
 
-<div id="loading">Loading...</div>
+<header>
+  <div class="logo">P</div>
+  <div class="brand"><div class="title">PhongCard</div><div class="subtitle small">Coin • Quay • Mini-game</div></div>
+  <div style="flex:1"></div>
+  <div style="display:flex;gap:8px;align-items:center">
+    <div id="coinBadge" class="small">Coin: 0</div>
+    <button id="musicToggle" class="btn btn-primary">🎵 Nhạc</button>
+  </div>
+</header>
 
-<!-- Login -->
-<section id="login-section" class="center active">
-  <h2>Đăng nhập / Đăng ký</h2>
-  <input id="username" placeholder="Tài khoản">
-  <input id="password" type="password" placeholder="Mật khẩu">
-  <button onclick="login()">Vào Dashboard</button>
-</section>
+<div class="container">
+  <!-- LEFT: main pages -->
+  <div class="left-col">
+    <!-- Home -->
+    <section id="homePage" class="card section active">
+      <h2>Home — Dashboard</h2>
+      <p class="muted">Chào mừng! Đây là trang Dashboard. Upload ảnh để thay background cho từng trang.</p>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:12px">
+        <div style="flex:1;min-width:160px" class="card">
+          <div class="small">Tài khoản</div>
+          <div id="uiUser" style="font-weight:800;margin-top:8px">Chưa đăng nhập</div>
+        </div>
+        <div style="flex:1;min-width:160px" class="card">
+          <div class="small">Coin</div>
+          <div id="uiCoin" style="font-weight:800;margin-top:8px">0 Xu</div>
+        </div>
+        <div style="flex:1;min-width:160px" class="card">
+          <div class="small">Lượt quay</div>
+          <div id="uiSpins" style="font-weight:800;margin-top:8px">0</div>
+        </div>
+      </div>
 
-<!-- Home -->
-<section id="home">
-  <h1>Chào mừng bạn đến Dashboard 🐱</h1>
-  <p>Đây là trang chủ với ảnh mèo dễ thương.</p>
-</section>
+      <div style="margin-top:12px" class="card">
+        <div class="small">Ảnh Dashboard</div>
+        <div id="homePreview" class="bg-preview" style="margin-top:8px"></div>
+        <div class="muted-note" style="margin-top:8px">Tải ảnh lên từ tab Tài khoản → lưu cục bộ (local).</div>
+      </div>
+    </section>
 
-<!-- Giftcode -->
-<section id="giftcode">
-  <h2>Nhập Giftcode</h2>
-  <input id="code-input" placeholder="Nhập code">
-  <button onclick="redeem()">Nhận</button>
-  <p id="code-msg"></p>
-</section>
+    <!-- Giftcode -->
+    <section id="redeemPage" class="card section">
+      <h2>Nhập Giftcode</h2>
+      <p class="muted">Định dạng: PHONGCARDxxx (lượt), PHONGVIPxxx (vip), PHONGGIFTxxx (xu).</p>
+      <div class="row" style="margin-top:8px">
+        <input id="codeInput" placeholder="Nhập code...">
+        <button id="applyCode" class="btn-primary ripple">Áp dụng</button>
+      </div>
+      <div id="redeemMsg" class="small" style="margin-top:8px"></div>
+      <div class="card" style="margin-top:12px">
+        <div class="small">Ảnh trang nhập code</div>
+        <div id="redeemPreview" class="bg-preview" style="margin-top:8px"></div>
+      </div>
+    </section>
 
-<!-- Quay thưởng -->
-<section id="spin">
-  <h2>Quay thưởng</h2>
-  <div id="wheel"><div id="pointer"></div></div>
-  <button id="spin-btn" onclick="spin()">Quay</button>
-  <div id="result"></div>
-</section>
+    <!-- Wheel -->
+    <section id="wheelPage" class="card section">
+      <h2>Vòng quay may mắn</h2>
+      <p class="muted">10%→7k • 20%→5k • 40%→2/3/4k • 30%→Câu chuyện</p>
+      <div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;margin-top:12px">
+        <div style="flex:1;min-width:280px" class="card">
+          <div class="wheel-wrap">
+            <div class="pointer"></div>
+            <div id="wheel" class="wheel" aria-hidden="true"></div>
+            <div style="display:flex;gap:8px;align-items:center;margin-top:8px">
+              <button id="spinBtn" class="btn-primary ripple">Quay ngay</button>
+              <div id="spinInfo" class="small"></div>
+            </div>
+            <div id="spinResult" class="small" style="margin-top:8px"></div>
+          </div>
+        </div>
+        <div style="width:300px">
+          <div class="card">
+            <div class="small">VIP boost</div>
+            <div id="vipFlag" class="muted-note" style="margin-top:8px"></div>
+          </div>
+          <div class="card" style="margin-top:12px">
+            <div class="small">Ảnh vòng quay</div>
+            <div id="wheelPreview" class="bg-preview" style="margin-top:8px"></div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-<!-- History -->
-<section id="history">
-  <h2>Lịch sử phần thưởng</h2>
-  <ul id="history-list"></ul>
-</section>
+    <!-- History -->
+    <section id="historyPage" class="card section">
+      <h2>Lịch sử</h2>
+      <p class="muted">Lịch sử phần thưởng gắn với tài khoản.</p>
+      <div id="historyList" class="history-list" style="margin-top:10px">Chưa có lịch sử</div>
+    </section>
 
-<!-- Account -->
-<section id="account">
-  <h2>Tài khoản</h2>
-  <p id="account-name"></p>
-  <button id="logout-btn" onclick="logout()">Đăng xuất</button>
-</section>
+    <!-- Earn (mini-games) -->
+    <section id="earnPage" class="card section">
+      <h2>Kiếm tiền (Mini-game)</h2>
+      <p class="muted">Chọn game để chơi và kiếm Xu!</p>
 
-<!-- Navbar -->
-<div class="navbar hidden" id="navbar">
-  <button onclick="showTab('home')" id="btn-home">🏠 Home</button>
-  <button onclick="showTab('giftcode')" id="btn-gift">🎁 Code</button>
-  <button onclick="showTab('spin')" id="btn-spin">🎡 Quay</button>
-  <button onclick="showTab('history')" id="btn-history">📜 Lịch sử</button>
-  <button onclick="showTab('account')" id="btn-account">👤 TK</button>
+      <div class="card" style="margin-top:10px">
+        <h3>Tung xúc xắc</h3>
+        <div class="dice-row" style="margin-top:8px">
+          <div id="diceA" style="font-size:40px">⚪</div>
+          <div id="diceB" style="font-size:40px">⚪</div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <button id="rollBtn" class="btn-primary ripple">Tung</button>
+          <div id="rollMsg" class="small" style="align-self:center"></div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:12px">
+        <h3>Câu cá</h3>
+        <div style="margin-top:8px">
+          <button id="fishBtn" class="btn-primary ripple">Câu</button>
+          <div id="fishMsg" class="small" style="margin-top:10px"></div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Account -->
+    <section id="accountPage" class="card section">
+      <h2>Tài khoản</h2>
+      <div id="accountBox" style="margin-top:8px">
+        <div class="small">Bạn chưa đăng nhập</div>
+        <div style="margin-top:10px"><button id="openAuth" class="btn-primary ripple">Đăng nhập / Đăng ký</button></div>
+      </div>
+
+      <div class="card" style="margin-top:12px">
+        <div class="small">Upload ảnh cho từng trang</div>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <label class="small">Home<input id="uploadHome" type="file" accept="image/*" style="display:none"></label>
+          <label class="small">Giftcode<input id="uploadRedeem" type="file" accept="image/*" style="display:none"></label>
+          <label class="small">Wheel<input id="uploadWheel" type="file" accept="image/*" style="display:none"></label>
+          <div style="flex:1"></div>
+        </div>
+        <div class="muted-note" style="margin-top:8px">Ảnh lưu cục bộ trên trình duyệt (localStorage).</div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- RIGHT: quick controls -->
+  <aside class="right-col">
+    <div class="card">
+      <div class="small">Nhạc nền</div>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button id="musicPlay" class="btn-primary ripple">Bật</button>
+        <button id="musicPause" class="btn ripple">Tắt</button>
+      </div>
+      <div class="muted-note" style="margin-top:8px">LoFi miễn phí tích hợp sẵn.</div>
+    </div>
+
+    <div class="card" style="margin-top:12px">
+      <div class="small">Nhập code nhanh</div>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <input id="sideCode" placeholder="NHẬP CODE">
+        <button id="sideApply" class="btn-primary ripple">OK</button>
+      </div>
+      <div id="sideMsg" class="small" style="margin-top:8px"></div>
+    </div>
+
+    <div class="card" style="margin-top:12px">
+      <div class="small">Mini lịch sử</div>
+      <div id="miniHistory" class="history-list small" style="margin-top:8px">Chưa có</div>
+    </div>
+  </aside>
 </div>
 
-<!-- Music -->
-<audio id="bg-music" loop>
-  <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_7b65e8c3f2.mp3" type="audio/mpeg">
+<!-- bottom nav -->
+<div class="bottom-nav" id="bottomNav">
+  <div class="nav-item active" data-target="homePage"><div class="icon">🏠</div><div class="small">Home</div></div>
+  <div class="nav-item" data-target="redeemPage"><div class="icon">🎁</div><div class="small">Giftcode</div></div>
+  <div class="nav-item" data-target="wheelPage"><div class="icon">🎡</div><div class="small">Quay</div></div>
+  <div class="nav-item" data-target="historyPage"><div class="icon">📜</div><div class="small">Lịch sử</div></div>
+  <div class="nav-item" data-target="earnPage"><div class="icon">💰</div><div class="small">Kiếm</div></div>
+  <div class="nav-item" data-target="accountPage" id="navAccount"><div class="icon">👤</div><div class="small">Tài khoản</div></div>
+</div>
+
+<!-- loader overlay -->
+<div id="loader" class="loader-overlay"><div class="loader-box">Đang tải...</div></div>
+
+<!-- audio LoFi (pixabay free) -->
+<audio id="bgMusic" loop>
+  <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_7b65e8c3f2.mp3?filename=lofi-chill-11293.mp3" type="audio/mpeg">
 </audio>
-<button id="music-btn" onclick="toggleMusic()">🎶 Bật nhạc</button>
+
+<!-- modal root -->
+<div id="modalRoot"></div>
 
 <script>
-let currentUser = null;
-let spinning = false;
+/* ============================
+   App data model (LocalStorage)
+   ============================ */
+const KEY='phongcard_pro_v1';
+let DB = JSON.parse(localStorage.getItem(KEY) || '{}');
+if (!DB.users) DB.users = {};
+if (!DB.usedCodes) DB.usedCodes = [];
+if (!DB.images) DB.images = {}; // home, redeem, wheel
+if (!DB._seeded) {
+  // seed sample giftcodes
+  for (let i=1;i<=30;i++){ DB['PHONGCARD' + String(i).padStart(3,'0')] = {type:'card'}; }
+  DB['PHONGVIP001'] = {type:'vip'}; DB['PHONGGIFT001'] = {type:'gift'};
+  DB._seeded=true;
+  localStorage.setItem(KEY, JSON.stringify(DB));
+}
+function saveDB(){ localStorage.setItem(KEY, JSON.stringify(DB)); }
 
-function login(){
-  const u=document.getElementById('username').value;
-  const p=document.getElementById('password').value;
-  if(!u||!p){alert("Nhập đủ tài khoản và mật khẩu!");return;}
-  localStorage.setItem('user',u);
-  currentUser=u;
-  document.getElementById('account-name').innerText="Xin chào, "+u;
-  document.getElementById('login-section').style.display="none";
-  document.getElementById('navbar').classList.remove('hidden');
-  showTab('home');
+/* session */
+let current = localStorage.getItem(KEY + '_session') || null;
+if (current && !DB.users[current]) { current = null; localStorage.removeItem(KEY + '_session'); }
+
+/* UI refs */
+const sections = document.querySelectorAll('.section');
+const navItems = document.querySelectorAll('.nav-item');
+const loader = document.getElementById('loader');
+const bottomNav = document.getElementById('bottomNav');
+
+const uiUser = document.getElementById('uiUser');
+const uiCoin = document.getElementById('uiCoin');
+const uiSpins = document.getElementById('uiSpins');
+const coinBadge = document.getElementById('coinBadge');
+
+const codeInput = document.getElementById('codeInput');
+const applyCodeBtn = document.getElementById('applyCode');
+const redeemMsg = document.getElementById('redeemMsg');
+
+const sideCode = document.getElementById('sideCode');
+const sideApply = document.getElementById('sideApply');
+const sideMsg = document.getElementById('sideMsg');
+
+const historyList = document.getElementById('historyList');
+const miniHistory = document.getElementById('miniHistory');
+
+const rollBtn = document.getElementById('rollBtn');
+const diceA = document.getElementById('diceA');
+const diceB = document.getElementById('diceB');
+const rollMsg = document.getElementById('rollMsg');
+
+const fishBtn = document.getElementById('fishBtn');
+const fishMsg = document.getElementById('fishMsg');
+
+const spinBtn = document.getElementById('spinBtn');
+const wheelEl = document.getElementById('wheel');
+const spinResult = document.getElementById('spinResult');
+const spinInfo = document.getElementById('spinInfo');
+const vipFlag = document.getElementById('vipFlag');
+
+const uploadHome = document.getElementById('uploadHome');
+const uploadRedeem = document.getElementById('uploadRedeem');
+const uploadWheel = document.getElementById('uploadWheel');
+const homePreview = document.getElementById('homePreview');
+const redeemPreview = document.getElementById('redeemPreview');
+const wheelPreview = document.getElementById('wheelPreview');
+
+const openAuthBtn = document.getElementById('openAuth');
+const accountBox = document.getElementById('accountBox');
+
+const musicPlay = document.getElementById('musicPlay');
+const musicPause = document.getElementById('musicPause');
+const bgMusic = document.getElementById('bgMusic');
+const musicToggle = document.getElementById('musicToggle');
+
+/* bottom nav clicks */
+navItems.forEach(it => it.addEventListener('click', ()=> {
+  const tgt = it.dataset.target; if (!tgt) return;
+  navItems.forEach(n=>n.classList.remove('active')); it.classList.add('active');
+  navigateTo(tgt);
+}));
+
+/* side controls binding */
+applyCodeBtn.addEventListener('click', ()=> handleRedeem(codeInput.value));
+sideApply.addEventListener('click', ()=> handleRedeem(sideCode.value));
+uploadHome.addEventListener('change', e=> handleUpload(e,'home'));
+uploadRedeem.addEventListener('change', e=> handleUpload(e,'redeem'));
+uploadWheel.addEventListener('change', e=> handleUpload(e,'wheel'));
+document.getElementById('openAuth').addEventListener('click', openAuth);
+musicPlay.addEventListener('click', ()=> { bgMusic.play(); updateMusicBtn(); });
+musicPause.addEventListener('click', ()=> { bgMusic.pause(); updateMusicBtn(); });
+musicToggle.addEventListener('click', ()=> { if (bgMusic.paused) bgMusic.play(); else bgMusic.pause(); updateMusicBtn(); });
+
+/* initial music volume */
+bgMusic.volume = 0.45;
+
+/* ============================
+   Navigation (fast, mobile optimized)
+   ============================ */
+function showLoader(ms=300){
+  loader.classList.add('show');
+  loader.classList.add('show'); loader.style.display='flex';
+  loader.classList.add('show');
+  setTimeout(()=> loader.classList.remove('show'), ms);
+  setTimeout(()=> loader.style.display='none', ms+60);
+}
+async function navigateTo(id){
+  // instant-ish: show small loader, swap section
+  showLoader(280);
+  sections.forEach(s=> s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if (id==='redeemPage') setTimeout(()=> codeInput.focus(), 120);
+  if (id==='wheelPage') renderWheel();
+  renderAll();
 }
 
-function logout(){
-  localStorage.removeItem('user');
-  currentUser=null;
-  location.reload();
+/* ============================
+   Auth (register / login / logout)
+   ============================ */
+function openAuth(){
+  const modal = document.createElement('div'); modal.className='modal-back';
+  modal.innerHTML = `<div class="card modal" style="width:92%;max-width:420px">
+    <h3>Đăng nhập / Đăng ký</h3>
+    <input id="authUser" placeholder="Tên tài khoản (không dấu)" />
+    <input id="authPass" placeholder="Mật khẩu" type="password" />
+    <div style="display:flex;gap:8px;margin-top:10px">
+      <button id="doLogin" class="btn-primary">Đăng nhập</button>
+      <button id="doReg" class="btn">Đăng ký</button>
+      <button id="doClose" class="btn">Đóng</button>
+    </div>
+    <div class="muted-note" style="margin-top:10px">Lưu dữ liệu cục bộ (localStorage).</div>
+  </div>`;
+  document.getElementById('modalRoot').appendChild(modal);
+  document.getElementById('doClose').onclick = ()=> modal.remove();
+  document.getElementById('doReg').onclick = ()=> {
+    const u=(document.getElementById('authUser').value||'').trim();
+    const p=(document.getElementById('authPass').value||'').trim();
+    if (!u||!p) return alert('Nhập tên và mật khẩu!');
+    if (DB.users[u]) return alert('Tài khoản đã tồn tại!');
+    DB.users[u] = { pass:p, coin:0, spins:0, vipBoost:false, history:[] };
+    saveDB();
+    current = u; localStorage.setItem(KEY + '_session', current); modal.remove(); toast('Đăng ký & đăng nhập: '+u); renderAll(); navigateTo('homePage');
+  };
+  document.getElementById('doLogin').onclick = ()=> {
+    const u=(document.getElementById('authUser').value||'').trim();
+    const p=(document.getElementById('authPass').value||'').trim();
+    if (!DB.users[u] || DB.users[u].pass !== p) return alert('Sai tài khoản hoặc mật khẩu!');
+    current = u; localStorage.setItem(KEY + '_session', current); modal.remove(); toast('Đăng nhập: '+u); renderAll(); navigateTo('homePage');
+  };
 }
 
-window.onload=function(){
-  const u=localStorage.getItem('user');
-  if(u){currentUser=u;
-    document.getElementById('login-section').style.display="none";
-    document.getElementById('navbar').classList.remove('hidden');
-    document.getElementById('account-name').innerText="Xin chào, "+u;
-    showTab('home');
-  }
-}
-
-function showTab(id){
-  document.getElementById('loading').classList.remove('hidden');
-  setTimeout(()=>{
-    document.getElementById('loading').classList.add('hidden');
-    document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-    document.querySelectorAll('.navbar button').forEach(b=>b.classList.remove('active'));
-    document.getElementById('btn-'+id).classList.add('active');
-  },400);
-}
-
-/* Giftcode */
-const codes=["Phongcard1","Phongcard2","Phongcard3"];
-function redeem(){
-  const val=document.getElementById('code-input').value;
-  const msg=document.getElementById('code-msg');
-  if(codes.includes(val)){
-    msg.innerText="Code hợp lệ! Bạn được +1 lượt quay.";
-    msg.style.color="#0f0";
-  }else{
-    msg.innerText="Code sai!";
-    msg.style.color="#f00";
-    document.getElementById('code-input').classList.add('shake');
-    setTimeout(()=>document.getElementById('code-input').classList.remove('shake'),300);
-  }
-}
-
-/* Spin */
-function spin(){
-  if(spinning) return;
-  spinning=true;
-  const wheel=document.getElementById('wheel');
-  const deg=360*5+Math.floor(Math.random()*360);
-  wheel.style.transition="transform 3s ease-out";
-  wheel.style.transform="rotate("+deg+"deg)";
-  setTimeout(()=>{
-    spinning=false;
-    const result=["7K","5K","2K","Câu chuyện"];
-    const r=result[Math.floor(Math.random()*result.length)];
-    document.getElementById('result').innerText="Bạn trúng: "+r;
-    addHistory(r);
-  },3000);
-}
-
-/* History */
-function addHistory(prize){
-  let list=JSON.parse(localStorage.getItem('history_'+currentUser)||"[]");
-  list.push({item:prize,time:new Date().toLocaleString()});
-  localStorage.setItem('history_'+currentUser,JSON.stringify(list));
-  renderHistory();
-}
-function renderHistory(){
-  const list=JSON.parse(localStorage.getItem('history_'+currentUser)||"[]");
-  const ul=document.getElementById('history-list');
-  ul.innerHTML="";
-  list.forEach(h=>{
-    const li=document.createElement('li');
-    li.innerText=h.time+" → "+h.item;
-    ul.appendChild(li);
-  });
-}
-renderHistory();
-
-/* Music */
-const music=document.getElementById("bg-music");
-const btn=document.getElementById("music-btn");
-function toggleMusic(){
-  if(music.paused){music.play();btn.innerText="🔇 Tắt nhạc";}
-  else{music.pause();btn.innerText="🎶 Bật nhạc";}
-}
-</script>
-</body>
-</html>
+/* ============================
+   Giftcode logic
+   ============================ */
+function normalizeCode(s){ return (s||'').trim().toUpperCase(); }
+function handleRedeem(raw){
+  const code = normalizeCode(raw);
+  if (!current) { showTemp(redeemMsg,'Đăng nhập để dùng code',true); return; }
+  if 
