@@ -3,271 +3,274 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PhongCard Mini Game</title>
+<title>PhongCard Mini Game Nâng Cấp Siêu Đẹp</title>
 <style>
-* {margin:0;padding:0;box-sizing:border-box;}
-body{font-family:Arial,sans-serif;background:#f0f0f0;color:#333;transition:0.3s;}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif;}
+body{background:#f0f0f0;color:#333;transition:0.3s;}
 body.dark{background:#121212;color:#eee;}
-header{padding:15px;text-align:center;font-size:1.5em;font-weight:bold;background:#2196F3;color:#fff;}
-body.dark header{background:#0b79d0;}
-nav{position:fixed;bottom:0;left:0;width:100%;display:flex;justify-content:space-around;background:#fff;border-top:1px solid #ccc;transition:0.3s;}
-body.dark nav{background:#1e1e1e;border-top:1px solid #444;}
-nav button{flex:1;padding:12px;border:none;background:none;cursor:pointer;transition:0.3s;font-size:0.9em;}
+header{padding:15px;text-align:center;font-size:1.5em;font-weight:bold;position:sticky;top:0;background:#fff;z-index:10;}
+body.dark header{background:#1e1e1e;}
+nav{position:fixed;bottom:0;width:100%;display:flex;justify-content:space-around;background:#fff;border-top:1px solid #ccc;z-index:10;transition:0.3s;}
+body.dark nav{background:#1e1e1e;border-top:1px solid #555;}
+nav button{flex:1;padding:10px;font-size:1em;border:none;background:none;transition:0.3s;cursor:pointer;}
 nav button.active{background:#ddd;}
 body.dark nav button.active{background:#333;}
-.tab{display:none;padding:15px;padding-bottom:60px;min-height:80vh;}
+.tab{display:none;padding:15px;padding-bottom:70px;min-height:80vh;animation:fadeIn 0.4s;}
 .tab.active{display:block;}
-h2{margin-bottom:10px;}
 button.action{padding:10px 20px;margin:5px 0;border:none;background:#2196F3;color:#fff;border-radius:5px;transition:0.2s;cursor:pointer;}
 button.action:hover{transform:scale(1.05);}
 body.dark button.action{background:#0b79d0;}
 input[type=text],input[type=password],input[type=number]{padding:10px;width:100%;margin:5px 0;border-radius:5px;border:1px solid #ccc;}
 body.dark input[type=text],body.dark input[type=password],body.dark input[type=number]{background:#222;color:#eee;border:1px solid #555;}
-table{width:100%;border-collapse: collapse;margin-top:10px;}
+table{width:100%;border-collapse:collapse;margin-top:10px;}
 th,td{border:1px solid #ccc;padding:5px;text-align:center;}
 body.dark table,body.dark th,body.dark td{border:1px solid #555;}
-.pixel{font-family:monospace;white-space:pre;font-size:12px;}
-.fade-in{animation:fadeIn 0.3s;}
 @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
-.progress-bar{position:relative;width:100%;height:20px;background:#ccc;border-radius:10px;margin:10px 0;}
-.progress-fill{position:absolute;top:0;left:0;height:100%;width:0%;background:#2196F3;border-radius:10px;transition:0.2s;}
+.pixel{font-family:monospace;white-space:pre;font-size:12px;}
+#fish-bar{width:100%;height:20px;background:#ccc;margin:10px 0;position:relative;border-radius:10px;}
+#fish-fish{width:20px;height:20px;background:#2196F3;position:absolute;left:0;top:0;border-radius:50%;transition:0.1s;}
+#dice-canvas{width:100px;height:100px;margin:auto;display:block;}
+#cow-btn{position:relative;}
 </style>
 </head>
 <body>
 
-<header>PhongCard Mini Game</header>
+<header>PhongCard Mini Game Nâng Cấp Siêu Đẹp</header>
 
-<!-- Tabs -->
 <div id="home" class="tab active">
-<h2>Trang chủ</h2>
-<p>Xin chào, <span id="user-name">Khách</span>!</p>
-<p>Coin: <span id="coin">0</span> | Pcoin: <span id="pcoin">0</span> | Lượt quay: <span id="spin-count">0</span></p>
-<button class="action" id="toggle-dark">Dark/Light Mode</button>
+  <h2>Trang chủ</h2>
+  <p>Xin chào, <span id="user-name">Khách</span>!</p>
+  <p>Coin: <span id="coin">0</span> | Pcoin: <span id="pcoin">0</span> | Lượt quay: <span id="spin-count">0</span></p>
+  <button class="action" id="toggle-dark">Dark/Light Mode</button>
 </div>
 
 <div id="spin" class="tab">
-<h2>Vòng quay</h2>
-<p>Giá 1 lượt: 1 lượt quay</p>
-<button class="action" id="spin-btn">Quay</button>
-<p id="spin-result"></p>
-<pre id="spin-animation" class="pixel"></pre>
+  <h2>Vòng quay</h2>
+  <p>Giá 1 lượt: 1 lượt quay</p>
+  <button class="action" id="spin-btn">Quay</button>
+  <p id="spin-result"></p>
+  <pre id="spin-animation" class="pixel"></pre>
 </div>
 
 <div id="code" class="tab">
-<h2>Nhập Giftcode</h2>
-<input type="text" id="giftcode" placeholder="Nhập code">
-<button class="action" id="redeem-btn">Nhận</button>
-<p id="gift-result"></p>
+  <h2>Nhập Giftcode</h2>
+  <input type="text" id="giftcode" placeholder="">
+  <button class="action" id="redeem-btn">Nhận</button>
+  <p id="gift-result"></p>
 </div>
 
 <div id="games" class="tab">
-<h2>Kiếm tiền</h2>
-<p>Câu cá (5 Pcoin), Tung xúc xắc (3 Pcoin), Kéo bò (15 Pcoin), Game toán (30 Pcoin)</p>
-<button class="action" id="fish-btn">Câu cá</button>
-<div class="progress-bar"><div class="progress-fill" id="fish-bar"></div></div>
-<button class="action" id="dice-btn">Tung xúc xắc</button><br>
-<button class="action" id="cow-btn">Kéo bò</button><br>
-<button class="action" id="math-btn">Game toán</button>
-<p id="game-result"></p>
-<pre id="game-animation" class="pixel"></pre>
+  <h2>Kiếm tiền</h2>
+  <p>Câu cá (5 Pcoin), Tung xúc xắc (3 Pcoin), Kéo bò (15 Pcoin), Game Toán (30 Pcoin)</p>
+  <div>
+    <div id="fish-bar"><div id="fish-fish"></div></div>
+    <button class="action" id="fish-btn">Câu cá</button>
+  </div>
+  <br>
+  <div>
+    <canvas id="dice-canvas"></canvas>
+    <button class="action" id="dice-btn">Tung xúc xắc</button>
+  </div>
+  <br>
+  <div>
+    <button class="action" id="cow-btn">Kéo bò</button>
+    <p id="cow-result"></p>
+  </div>
+  <br>
+  <div>
+    <button class="action" id="math-btn">Game Toán</button>
+    <div id="math-section" style="display:none;">
+      <p id="math-question"></p>
+      <input type="number" id="math-answer">
+      <button class="action" id="math-submit">Xác nhận</button>
+      <p id="math-result"></p>
+    </div>
+  </div>
+  <pre id="game-animation" class="pixel"></pre>
+  <p id="game-result"></p>
 </div>
 
 <div id="account" class="tab">
-<h2>Tài khoản & Lịch sử</h2>
-<div id="auth-section">
-<input type="text" id="reg-user" placeholder="Tên đăng nhập">
-<input type="password" id="reg-pass" placeholder="Mật khẩu">
-<button class="action" id="register-btn">Đăng ký</button>
-<hr>
-<input type="text" id="login-user" placeholder="Tên đăng nhập">
-<input type="password" id="login-pass" placeholder="Mật khẩu">
-<button class="action" id="login-btn">Đăng nhập</button>
-</div>
-<div id="dash-section" style="display:none;">
-<button class="action" id="logout-btn">Đăng xuất</button>
-<h3>Lịch sử</h3>
-<table id="history-table">
-<tr><th>Thời gian</th><th>Sự kiện</th><th>Coin/Pcoin</th></tr>
-</table>
-<h3>Đổi Pcoin</h3>
-<input type="number" id="exchange-amount" placeholder="Số Pcoin muốn đổi">
-<button class="action" id="exchange-btn">Đổi sang VNĐ</button>
-<p id="exchange-result"></p>
+  <h2>Tài khoản & Lịch sử</h2>
+  <div id="auth-section">
+    <input type="text" id="reg-user" placeholder="Tên đăng nhập">
+    <input type="password" id="reg-pass" placeholder="Mật khẩu">
+    <button class="action" id="register-btn">Đăng ký</button>
+    <hr>
+    <input type="text" id="login-user" placeholder="Tên đăng nhập">
+    <input type="password" id="login-pass" placeholder="Mật khẩu">
+    <button class="action" id="login-btn">Đăng nhập</button>
+  </div>
+  <div id="dash-section" style="display:none;">
+    <button class="action" id="logout-btn">Đăng xuất</button>
+    <h3>Lịch sử</h3>
+    <table id="history-table"><tr><th>Thời gian</th><th>Sự kiện</th><th>Coin/Pcoin</th></tr></table>
+    <h3>Đổi Pcoin</h3>
+    <input type="number" id="exchange-amount" placeholder="Số Pcoin muốn đổi">
+    <button class="action" id="exchange-btn">Đổi sang VNĐ</button>
+    <p id="exchange-result"></p>
+  </div>
 </div>
 
-<!-- Menu -->
 <nav>
-<button class="active" data-tab="home">Trang chủ</button>
-<button data-tab="spin">Vòng quay</button>
-<button data-tab="code">Code</button>
-<button data-tab="games">Kiếm tiền</button>
-<button data-tab="account">Tài khoản</button>
+  <button class="active" data-tab="home">Trang chủ</button>
+  <button data-tab="spin">Vòng quay</button>
+  <button data-tab="code">Code</button>
+  <button data-tab="games">Kiếm tiền</button>
+  <button data-tab="account">Tài khoản</button>
 </nav>
 
 <audio id="ting-sound" src="https://freesound.org/data/previews/320/320181_5260877-lq.mp3"></audio>
 
 <script>
-document.addEventListener('DOMContentLoaded',()=>{
-// LocalStorage Init
+// ============ LocalStorage Init ============
 if(!localStorage.getItem('users')) localStorage.setItem('users', JSON.stringify({}));
-let users=JSON.parse(localStorage.getItem('users'));
-let currentUser=localStorage.getItem('currentUser')||null;
+let currentUser = localStorage.getItem('currentUser') || null;
+let users = JSON.parse(localStorage.getItem('users'));
 
-// Tab Navigation
-const tabs=document.querySelectorAll('.tab');
-const navButtons=document.querySelectorAll('nav button');
+// ============ Tab Navigation ============
+const tabs = document.querySelectorAll('.tab');
+const navButtons = document.querySelectorAll('nav button');
 navButtons.forEach(btn=>{
-btn.addEventListener('click',()=>{
-navButtons.forEach(b=>b.classList.remove('active'));
-btn.classList.add('active');
-tabs.forEach(t=>t.classList.remove('active'));
-document.getElementById(btn.dataset.tab).classList.add('active');
-});
+  btn.addEventListener('click', ()=>{
+    navButtons.forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const target = btn.dataset.tab;
+    tabs.forEach(t=>t.classList.remove('active'));
+    document.getElementById(target).classList.add('active');
+  });
 });
 
-// Dark/Light
-document.getElementById('toggle-dark').addEventListener('click',()=>{document.body.classList.toggle('dark');});
+// ============ Dark/Light Mode ============
+document.getElementById('toggle-dark').addEventListener('click', ()=>{document.body.classList.toggle('dark');});
 
-// Update Dashboard
+// ============ Authentication ============
 function updateDash(){
-if(currentUser){
-document.getElementById('auth-section').style.display='none';
-document.getElementById('dash-section').style.display='block';
-document.getElementById('user-name').innerText=currentUser;
-document.getElementById('coin').innerText=users[currentUser].coin;
-document.getElementById('pcoin').innerText=users[currentUser].pcoin||0;
-document.getElementById('spin-count').innerText=users[currentUser].spinCount||0;
-updateHistoryTable();
-}else{
-document.getElementById('auth-section').style.display='block';
-document.getElementById('dash-section').style.display='none';
-}
+  if(currentUser){
+    document.getElementById('auth-section').style.display='none';
+    document.getElementById('dash-section').style.display='block';
+    document.getElementById('user-name').innerText=currentUser;
+    document.getElementById('coin').innerText=users[currentUser].coin;
+    document.getElementById('pcoin').innerText=users[currentUser].pcoin||0;
+    document.getElementById('spin-count').innerText=users[currentUser].spinCount||0;
+    updateHistoryTable();
+  } else {
+    document.getElementById('auth-section').style.display='block';
+    document.getElementById('dash-section').style.display='none';
+  }
 }
 
-// History
-function addHistory(event,coinChange,pcoinChange){
-const time=new Date().toLocaleString();
-const entry={time,event,coinChange,pcoinChange};
-users[currentUser].history.push(entry);
-localStorage.setItem('users',JSON.stringify(users));
-updateHistoryTable();
+document.getElementById('register-btn').addEventListener('click', ()=>{
+  const u=document.getElementById('reg-user').value.trim();
+  const p=document.getElementById('reg-pass').value.trim();
+  if(!u||!p){alert('Nhập đầy đủ');return;}
+  if(users[u]){alert('Tài khoản đã tồn tại'); return;}
+  users[u]={coin:0,pcoin:0,history:[],spinCount:0,password:p};
+  localStorage.setItem('users', JSON.stringify(users));
+  alert('Đăng ký thành công!'); 
+});
+
+document.getElementById('login-btn').addEventListener('click', ()=>{
+  const u=document.getElementById('login-user').value.trim();
+  const p=document.getElementById('login-pass').value.trim();
+  if(users[u] && users[u].password===p){
+    currentUser=u;
+    localStorage.setItem('currentUser',currentUser);
+    updateDash();
+  } else {alert('Đăng nhập thất bại');}
+});
+
+document.getElementById('logout-btn').addEventListener('click', ()=>{
+  currentUser=null;
+  localStorage.removeItem('currentUser');
+  updateDash();
+});
+
+// ============ History ============
+function addHistory(event, coinChange, pcoinChange){
+  const time=new Date().toLocaleString();
+  const entry={time,event,coinChange,pcoinChange};
+  users[currentUser].history.push(entry);
+  localStorage.setItem('users', JSON.stringify(users));
+  updateHistoryTable();
 }
+
 function updateHistoryTable(){
-const table=document.getElementById('history-table');
-table.innerHTML='<tr><th>Thời gian</th><th>Sự kiện</th><th>Coin/Pcoin</th></tr>';
-users[currentUser].history.slice().reverse().forEach(h=>{
-const tr=document.createElement('tr');
-tr.innerHTML=`<td>${h.time}</td><td>${h.event}</td><td>${h.coinChange>0?'+':''}${h.coinChange} / ${h.pcoinChange>0?'+':''}${h.pcoinChange}</td>`;
-table.appendChild(tr);
-});
-document.getElementById('coin').innerText=users[currentUser].coin;
-document.getElementById('pcoin').innerText=users[currentUser].pcoin;
-document.getElementById('spin-count').innerText=users[currentUser].spinCount;
+  const table=document.getElementById('history-table');
+  table.innerHTML='<tr><th>Thời gian</th><th>Sự kiện</th><th>Coin/Pcoin</th></tr>';
+  users[currentUser].history.slice().reverse().forEach(h=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td>${h.time}</td><td>${h.event}</td><td>${h.coinChange>0?'+':''}${h.coinChange} / ${h.pcoinChange>0?'+':''}${h.pcoinChange}</td>`;
+    table.appendChild(tr);
+  });
+  document.getElementById('coin').innerText=users[currentUser].coin;
+  document.getElementById('pcoin').innerText=users[currentUser].pcoin;
+  document.getElementById('spin-count').innerText=users[currentUser].spinCount;
 }
 
-// Auth
-document.getElementById('register-btn').addEventListener('click',()=>{
-const u=document.getElementById('reg-user').value.trim();
-const p=document.getElementById('reg-pass').value.trim();
-if(!u||!p){alert('Nhập đầy đủ');return;}
-if(users[u]){alert('Tài khoản đã tồn tại');return;}
-users[u]={coin:0,pcoin:0,spinCount:0,history:[],password:p};
-localStorage.setItem('users',JSON.stringify(users));
-alert('Đăng ký thành công!');
+// ============ Giftcode ============
+document.getElementById('redeem-btn').addEventListener('click', ()=>{
+  const code=document.getElementById('giftcode').value.trim().toUpperCase();
+  if(code==='ADMINPHONG'){users[currentUser].pcoin+=100000000; addHistory('Giftcode ADMINPHONG',0,100000000); document.getElementById('gift-result').innerText='Nhận 100 triệu Pcoin thành công!';return;}
+  if(!/^PHONGCARD\d{3}$/.test(code)){document.getElementById('gift-result').innerText='Code không hợp lệ'; return;}
+  if(users[currentUser].history.find(h=>h.event==='Giftcode '+code)){document.getElementById('gift-result').innerText='Code đã dùng'; return;}
+  users[currentUser].spinCount = (users[currentUser].spinCount||0)+1;
+  addHistory('Giftcode '+code,0,0);
+  document.getElementById('gift-result').innerText='Nhận +1 lượt quay thành công!';
 });
 
-document.getElementById('login-btn').addEventListener('click',()=>{
-const u=document.getElementById('login-user').value.trim();
-const p=document.getElementById('login-pass').value.trim();
-if(users[u]&&users[u].password===p){
-currentUser=u;
-localStorage.setItem('currentUser',currentUser);
+// ============ Spin ============
+document.getElementById('spin-btn').addEventListener('click', ()=>{
+  if((users[currentUser].spinCount||0)<1){alert('Không còn lượt quay'); return;}
+  users[currentUser].spinCount--;
+  let h=0;
+  const rand=Math.random();
+  let result='';
+  if(rand<0.5){h=10; result='Bạn nhận 10 Pcoin';}
+  else if(rand<0.8){h=30; result='Bạn nhận 30 Pcoin';}
+  else{h=50; result='Bạn nhận 50 Pcoin';}
+  users[currentUser].pcoin+=h;
+  addHistory('Vòng quay',0,h);
+  document.getElementById('spin-result').innerText=result;
+  document.getElementById('ting-sound').play();
+});
+
+// ================== Mini Games Basic (vẫn update animation nâng cao) ==================
+document.getElementById('fish-btn').addEventListener('click', ()=>{alert('Câu cá nâng cao đang cập nhật');});
+document.getElementById('dice-btn').addEventListener('click', ()=>{alert('Xúc xắc nâng cao đang cập nhật');});
+document.getElementById('cow-btn').addEventListener('click', ()=>{alert('Kéo bò nâng cao đang cập nhật');});
+document.getElementById('math-btn').addEventListener('click', ()=>{
+  document.getElementById('math-section').style.display='block';
+  const a=Math.floor(Math.random()*10+1);
+  const b=Math.floor(Math.random()*10+1);
+  const op=['+','-','*','/'][Math.floor(Math.random()*4)];
+  document.getElementById('math-question').innerText=`${a} ${op} ${b} = ?`;
+});
+document.getElementById('math-submit').addEventListener('click', ()=>{
+  const q=document.getElementById('math-question').innerText;
+  const ans=Number(document.getElementById('math-answer').value);
+  let correct=false;
+  try{correct=eval(q.replace('= ?',''))===ans;}catch(e){correct=false;}
+  if(correct){users[currentUser].pcoin+=40; addHistory('Game Toán thắng',0,40); document.getElementById('math-result').innerText='Chính xác! +40 Pcoin';}
+  else{document.getElementById('math-result').innerText='Sai! Không nhận gì';}
+  updateDash();
+});
+
+// ============ Exchange ============
+document.getElementById('exchange-btn').addEventListener('click', ()=>{
+  let val=Number(document.getElementById('exchange-amount').value);
+  if(val<=0||val>users[currentUser].pcoin){alert('Không hợp lệ'); return;}
+  if(confirm(`Bạn có chắc muốn đổi ${val} Pcoin sang VNĐ?`)){
+    const vn=val/10000;
+    users[currentUser].pcoin-=val;
+    addHistory('Đổi Pcoin',0,-val);
+    document.getElementById('exchange-result').innerText=`Đã đổi ${val} Pcoin sang ${vn} VNĐ thành công! (${new Date().toLocaleString()})`;
+    updateDash();
+  }
+});
+
 updateDash();
-}else alert('Đăng nhập thất bại');
-});
+</script>
 
-document.getElementById('logout-btn').addEventListener('click',()=>{
-currentUser=null;
-localStorage.removeItem('currentUser');
-updateDash();
-});
-
-// Giftcode
-document.getElementById('redeem-btn').addEventListener('click',()=>{
-if(!currentUser){alert('Đăng nhập để nhận giftcode');return;}
-const code=document.getElementById('giftcode').value.trim().toUpperCase();
-if(code==='ADMINPHONG'){users[currentUser].pcoin+=100000000;addHistory('Giftcode Adminphong',0,100000000);document.getElementById('gift-result').innerText='Nhận 100 triệu Pcoin!';updateDash();return;}
-if(!/^PHONGCARD\d{3}$/.test(code)){document.getElementById('gift-result').innerText='Code không hợp lệ';return;}
-if(users[currentUser].history.find(h=>h.event==='Giftcode '+code)){document.getElementById('gift-result').innerText='Code đã dùng';return;}
-users[currentUser].spinCount=(users[currentUser].spinCount||0)+1;
-addHistory('Giftcode '+code,0,0);
-document.getElementById('gift-result').innerText='Nhận +1 lượt quay thành công!';
-updateDash();
-});
-
-// Spin
-document.getElementById('spin-btn').addEventListener('click',()=>{
-if(!currentUser){alert('Đăng nhập để quay');return;}
-if((users[currentUser].spinCount||0)<1){alert('Không còn lượt quay');return;}
-users[currentUser].spinCount--;
-let h=0,result='';
-const rand=Math.random();
-if(rand<0.5){h=10;result='Bạn nhận 10 Pcoin';}
-else if(rand<0.8){h=30;result='Bạn nhận 30 Pcoin';}
-else{h=50;result='Bạn nhận 50 Pcoin';}
-users[currentUser].pcoin+=h;
-addHistory('Vòng quay',0,h);
-document.getElementById('spin-result').innerText=result;
-document.getElementById('ting-sound').play();
-updateDash();
-});
-
-// Mini Games
-const ting=document.getElementById('ting-sound');
-
-function playAnimation(text,target){
-let frame=0;
-const anim=['|','/','-','\\'];
-const interval=setInterval(()=>{
-target.innerText=anim[frame%4]+' '+text;
-frame++;
-if(frame>7) clearInterval(interval);
-},100);
-}
-
-// Câu cá
-document.getElementById('fish-btn').addEventListener('click',()=>{
-if(!currentUser){alert('Đăng nhập để chơi');return;}
-if(users[currentUser].pcoin<5){alert('Không đủ Pcoin');return;}
-users[currentUser].pcoin-=5;
-let r=Math.random();let h=0;let result='';
-if(r<0.5){result='Ra rác, không được gì';h=0;}
-else if(r<0.8){result='Cá nhỏ +2 Pcoin';h=2;}
-else if(r<0.9){result='Cá to +10 Pcoin';h=10;}
-else{result='Cá hiếm +20 Pcoin';h=20;}
-users[currentUser].pcoin+=h;
-addHistory('Câu cá',0,h);
-document.getElementById('game-result').innerText=result;
-playAnimation(result,document.getElementById('game-animation'));
-ting.play();
-updateDash();
-});
-
-// Xúc xắc
-document.getElementById('dice-btn').addEventListener('click',()=>{
-if(!currentUser){alert('Đăng nhập để chơi');return;}
-if(users[currentUser].pcoin<3){alert('Không đủ Pcoin');return;}
-users[currentUser].pcoin-=3;
-let r=Math.random();let h=0,result='';
-if(r<0.4){result='Thua, +1 Pcoin';h=1;}
-else{result='Thắng, +5 Pcoin';h=5;}
-users[currentUser].pcoin+=h;
-addHistory('Tung xúc xắc',0,h);
-document.getElementById('game-result').innerText=result;
-playAnimation(result,document.getElementById('game-animation'));
-ting.play();
-updateDash();
-});
-
-// Kéo bò
-document.getElementById('
+</body>
+</html>
