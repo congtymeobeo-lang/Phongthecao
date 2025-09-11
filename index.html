@@ -3,43 +3,64 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PhongCard Mini Game</title>
+<title>PhongCard Mini Game Nâng Cấp</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:Arial,sans-serif;background:#f0f0f0;color:#333;transition:0.3s;}
-body.dark{background:#121212;color:#eee;}
+/* ===================== Reset & Body ===================== */
+* {margin:0; padding:0; box-sizing:border-box;}
+body {font-family: Arial, sans-serif; background:#f0f0f0; color:#333; transition: background 0.3s, color 0.3s;}
+body.dark {background:#121212; color:#eee;}
+a{text-decoration:none; color:inherit;}
 button{cursor:pointer;}
-header{padding:10px;text-align:center;font-size:1.5em;font-weight:bold;}
-nav{position:fixed;bottom:0;left:0;width:100%;display:flex;justify-content:space-around;background:#fff;border-top:1px solid #ccc;transition:0.3s;}
-body.dark nav{background:#1e1e1e;border-top:1px solid #444;}
-nav button{flex:1;padding:10px;font-size:1em;border:none;background:none;transition:0.3s;}
+
+/* ===================== Header ===================== */
+header{padding:10px; text-align:center; font-size:1.5em; font-weight:bold;}
+
+/* ===================== Menu ===================== */
+nav{position:fixed; bottom:0; left:0; width:100%; display:flex; justify-content:space-around; background:#fff; border-top:1px solid #ccc; transition: background 0.3s;}
+body.dark nav{background:#1e1e1e; border-top:1px solid #444;}
+nav button{flex:1; padding:10px; font-size:1em; border:none; background:none; transition: background 0.3s;}
 nav button.active{background:#ddd;}
 body.dark nav button.active{background:#333;}
-.tab{display:none;padding:15px;padding-bottom:60px;min-height:80vh;}
+
+/* ===================== Tabs ===================== */
+.tab{display:none; padding:15px; padding-bottom:60px; min-height:80vh;}
 .tab.active{display:block;}
 h2{margin-bottom:10px;}
-button.action{padding:10px 20px;margin:5px 0;border:none;background:#2196F3;color:#fff;border-radius:5px;transition:0.2s;}
+
+/* ===================== Buttons ===================== */
+button.action{padding:10px 20px; margin:5px 0; border:none; background:#2196F3; color:#fff; border-radius:5px; transition: transform 0.2s;}
 button.action:hover{transform:scale(1.05);}
 body.dark button.action{background:#0b79d0;}
-input[type=text],input[type=password],input[type=number]{padding:10px;width:100%;margin:5px 0;border-radius:5px;border:1px solid #ccc;}
-body.dark input[type=text],body.dark input[type=password],body.dark input[type=number]{background:#222;color:#eee;border:1px solid #555;}
-table{width:100%;border-collapse: collapse;margin-top:10px;}
-th,td{border:1px solid #ccc;padding:5px;text-align:center;}
-body.dark table,body.dark th,body.dark td{border:1px solid #555;}
-@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+
+/* ===================== Inputs ===================== */
+input[type=text], input[type=password], input[type=number]{padding:10px; width:100%; margin:5px 0; border-radius:5px; border:1px solid #ccc;}
+body.dark input[type=text], body.dark input[type=password], body.dark input[type=number]{background:#222; color:#eee; border:1px solid #555;}
+
+/* ===================== History Table ===================== */
+table{width:100%; border-collapse: collapse; margin-top:10px;}
+th, td{border:1px solid #ccc; padding:5px; text-align:center;}
+body.dark table, body.dark th, body.dark td{border:1px solid #555;}
+
+/* ===================== Animations ===================== */
+@keyframes fadeIn {from{opacity:0;} to{opacity:1;}}
 .fade-in{animation:fadeIn 0.3s;}
-.pixel{font-family:monospace;white-space:pre;font-size:12px;}
+
+/* ===================== Pixel Animation ===================== */
+.pixel {font-family: monospace; white-space: pre; font-size:12px;}
+/* ===================== Mini Game Styles ===================== */
+#fish-bar {position: relative; width: 100%; height: 30px; background: #ddd; margin: 10px 0;}
+#fish {position: absolute; width: 20px; height: 30px; background: red; left: 0;}
 </style>
 </head>
 <body>
 
 <header>PhongCard Mini Game Nâng Cấp</header>
 
-<!-- Tabs -->
+<!-- ===================== Tabs ===================== -->
 <div id="home" class="tab active">
   <h2>Trang chủ</h2>
   <p>Xin chào, <span id="user-name">Khách</span>!</p>
-  <p>Coin: <span id="coin">0</span> | Pcoin: <span id="hcoin">0</span> | Lượt quay: <span id="spin-count">0</span></p>
+  <p>Coin: <span id="coin">0</span> | Pcoin: <span id="pcoin">0</span> | Lượt quay: <span id="spin-count">0</span></p>
   <button class="action" id="toggle-dark">Dark/Light Mode</button>
 </div>
 
@@ -53,17 +74,25 @@ body.dark table,body.dark th,body.dark td{border:1px solid #555;}
 
 <div id="code" class="tab">
   <h2>Nhập Giftcode</h2>
-  <input type="text" id="giftcode" placeholder="PHONGCARD001 đến PHONGCARD300">
+  <input type="text" id="giftcode" placeholder="">
   <button class="action" id="redeem-btn">Nhận</button>
   <p id="gift-result"></p>
 </div>
 
 <div id="games" class="tab">
   <h2>Kiếm tiền</h2>
-  <p>Câu cá (5 Pcoin), Tung xúc xắc (3 Pcoin), Kéo bò (15 Pcoin)</p>
-  <button class="action" id="fish-btn">Câu cá</button><br>
-  <button class="action" id="dice-btn">Tung xúc xắc</button><br>
-  <button class="action" id="cow-btn">Kéo bò</button><br>
+  <p>Câu cá (5 Pcoin), Tung xúc xắc (3 Pcoin), Kéo bò (15 Pcoin), Toán (30 Pcoin)</p>
+  <button class="action" id="fish-btn">Câu cá</button>
+  <div id="fish-bar"><div id="fish"></div></div>
+  <button class="action" id="dice-btn">Tung xúc xắc</button>
+  <button class="action" id="cow-btn">Kéo bò</button>
+  <button class="action" id="math-btn">Chơi Toán</button>
+  <div id="math-section" style="display:none;">
+    <p id="math-question"></p>
+    <input type="number" id="math-answer" placeholder="Nhập đáp án">
+    <button class="action" id="math-submit">Xác nhận</button>
+    <p id="math-result"></p>
+  </div>
   <p id="game-result"></p>
   <pre id="game-animation" class="pixel"></pre>
 </div>
@@ -82,15 +111,17 @@ body.dark table,body.dark th,body.dark td{border:1px solid #555;}
   <div id="dash-section" style="display:none;">
     <button class="action" id="logout-btn">Đăng xuất</button>
     <h3>Lịch sử</h3>
-    <table id="history-table"><tr><th>Thời gian</th><th>Sự kiện</th><th>Coin/Pcoin</th></tr></table>
+    <table id="history-table">
+      <tr><th>Thời gian</th><th>Sự kiện</th><th>Coin/Pcoin</th></tr>
+    </table>
     <h3>Đổi Pcoin</h3>
-    <input type="number" id="exchange-amount" placeholder="Số Pcoin muốn đổi">
+    <input type="number" id="exchange-amount" placeholder="Số tiền muốn đổi (VNĐ)">
     <button class="action" id="exchange-btn">Đổi sang VNĐ</button>
     <p id="exchange-result"></p>
   </div>
 </div>
 
-<!-- Menu -->
+<!-- ===================== Menu ===================== -->
 <nav>
   <button class="active" data-tab="home">Trang chủ</button>
   <button data-tab="spin">Vòng quay</button>
@@ -99,213 +130,102 @@ body.dark table,body.dark th,body.dark td{border:1px solid #555;}
   <button data-tab="account">Tài khoản</button>
 </nav>
 
+<!-- ===================== Audio ===================== -->
 <audio id="ting-sound" src="https://freesound.org/data/previews/320/320181_5260877-lq.mp3"></audio>
 
+<!-- ===================== Firebase ===================== -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
 <script>
-window.onload=function(){
-  // LocalStorage Init
-  if(!localStorage.getItem('users')) localStorage.setItem('users',JSON.stringify({}));
-  let currentUser = localStorage.getItem('currentUser')||null;
-  let users = JSON.parse(localStorage.getItem('users'));
-
-  // Tab Navigation
-  const tabs=document.querySelectorAll('.tab');
-  const navButtons=document.querySelectorAll('nav button');
-  navButtons.forEach(btn=>{
-    btn.addEventListener('click',()=>{
-      navButtons.forEach(b=>b.classList.remove('active'));
-      btn.classList.add('active');
-      const target=btn.dataset.tab;
-      tabs.forEach(t=>t.classList.remove('active'));
-      document.getElementById(target).classList.add('active');
-    });
-  });
-
-  // Dark/Light
-  document.getElementById('toggle-dark').addEventListener('click',()=>document.body.classList.toggle('dark'));
-
-  // History
-  function addHistory(event,coinChange,pcoinChange){
-    const time=new Date().toLocaleString();
-    const entry={time,event,coinChange,pcoinChange};
-    users[currentUser].history.push(entry);
-    localStorage.setItem('users',JSON.stringify(users));
-    updateHistoryTable();
-  }
-
-  function updateHistoryTable(){
-    const table=document.getElementById('history-table');
-    table.innerHTML='<tr><th>Thời gian</th><th>Sự kiện</th><th>Coin/Pcoin</th></tr>';
-    users[currentUser].history.slice().reverse().forEach(h=>{
-      const tr=document.createElement('tr');
-      tr.innerHTML=`<td>${h.time}</td><td>${h.event}</td><td>${h.coinChange>0?'+':''}${h.coinChange} / ${h.pcoinChange>0?'+':''}${h.pcoinChange}</td>`;
-      table.appendChild(tr);
-    });
-    document.getElementById('coin').innerText=users[currentUser].coin;
-    document.getElementById('hcoin').innerText=users[currentUser].pcoin;
-    document.getElementById('spin-count').innerText=users[currentUser].spinCount;
-  }
-
-  // Update Dash
-  function updateDash(){
-    if(currentUser){
-      document.getElementById('auth-section').style.display='none';
-      document.getElementById('dash-section').style.display='block';
-      document.getElementById('user-name').innerText=currentUser;
-      document.getElementById('coin').innerText=users[currentUser].coin;
-      document.getElementById('hcoin').innerText=users[currentUser].pcoin;
-      document.getElementById('spin-count').innerText=users[currentUser].spinCount;
-      updateHistoryTable();
-    }else{
-      document.getElementById('auth-section').style.display='block';
-      document.getElementById('dash-section').style.display='none';
-    }
-    checkButtons();
-  }
-
-  // Check Buttons
-  function checkButtons(){
-    if(!currentUser){
-      ['spin-btn','fish-btn','dice-btn','cow-btn'].forEach(id=>document.getElementById(id).disabled=true);
-    }else{
-      document.getElementById('spin-btn').disabled=(users[currentUser].spinCount||0)<1;
-      document.getElementById('fish-btn').disabled=(users[currentUser].pcoin||0)<5;
-      document.getElementById('dice-btn').disabled=(users[currentUser].pcoin||0)<3;
-      document.getElementById('cow-btn').disabled=(users[currentUser].pcoin||0)<15;
-    }
-  }
-
-  // Register/Login/Logout
-  document.getElementById('register-btn').addEventListener('click',()=>{
-    const u=document.getElementById('reg-user').value.trim();
-    const p=document.getElementById('reg-pass').value.trim();
-    if(!u||!p){alert('Nhập đầy đủ');return;}
-    if(users[u]){alert('Tài khoản đã tồn tại'); return;}
-    users[u]={coin:0,pcoin:0,spinCount:0,history:[],password:p};
-    localStorage.setItem('users',JSON.stringify(users));
-    alert('Đăng ký thành công!');
-  });
-
-  document.getElementById('login-btn').addEventListener('click',()=>{
-    const u=document.getElementById('login-user').value.trim();
-    const p=document.getElementById('login-pass').value.trim();
-    if(users[u]&&users[u].password===p){
-      currentUser=u;
-      localStorage.setItem('currentUser',currentUser);
-      updateDash();
-    }else alert('Đăng nhập thất bại');
-  });
-
-  document.getElementById('logout-btn').addEventListener('click',()=>{
-    currentUser=null;
-    localStorage.removeItem('currentUser');
-    updateDash();
-  });
-
-  // Giftcode
-  document.getElementById('redeem-btn').addEventListener('click',()=>{
-    if(!currentUser){alert('Vui lòng đăng nhập'); return;}
-    const code=document.getElementById('giftcode').value.trim().toUpperCase();
-    if(!/^PHONGCARD\d{3}$/.test(code)){document.getElementById('gift-result').innerText='Code không hợp lệ'; return;}
-    if(users[currentUser].history.find(h=>h.event==='Giftcode '+code)){document.getElementById('gift-result').innerText='Code đã dùng'; return;}
-    users[currentUser].spinCount=(users[currentUser].spinCount||0)+1;
-    addHistory('Giftcode '+code,0,0);
-    document.getElementById('gift-result').innerText='Nhận +1 lượt quay thành công!';
-    updateDash();
-  });
-
-  // Spin
-  document.getElementById('spin-btn').addEventListener('click',()=>{
-    if(!currentUser){alert('Vui lòng đăng nhập'); return;}
-    if((users[currentUser].spinCount||0)<1){alert('Không còn lượt quay'); return;}
-    users[currentUser].spinCount--;
-    let h=0; let result='';
-    const r=Math.random();
-    if(r<0.5){h=10; result='Bạn nhận 10 Pcoin';}
-    else if(r<0.8){h=30; result='Bạn nhận 30 Pcoin';}
-    else{h=50; result='Bạn nhận 50 Pcoin';}
-    users[currentUser].pcoin+=h;
-    addHistory('Vòng quay',0,h);
-    document.getElementById('spin-result').innerText=result;
-    document.getElementById('ting-sound').play();
-    updateDash();
-  });
-
-  // Mini-games
-  const ting=document.getElementById('ting-sound');
-  function playAnimation(text,target){
-    let frame=0;
-    const anim=['|','/','-','\\'];
-    const interval=setInterval(()=>{
-      target.innerText=anim[frame%4]+' '+text;
-      frame++;
-      if(frame>7) clearInterval(interval);
-    },100);
-  }
-
-  document.getElementById('fish-btn').addEventListener('click',()=>{
-    if(!currentUser){alert('Vui lòng đăng nhập'); return;}
-    if(users[currentUser].pcoin<5){alert('Không đủ Pcoin'); return;}
-    users[currentUser].pcoin-=5;
-    const r=Math.random(); let h=0,result='';
-    if(r<0.5){result='Ra rác, không được gì';h=0;}
-    else if(r<0.8){result='Cá nhỏ +2 Pcoin';h=2;}
-    else if(r<0.9){result='Cá to +10 Pcoin';h=10;}
-    else{result='Cá hiếm +20 Pcoin';h=20;}
-    users[currentUser].pcoin+=h;
-    addHistory('Câu cá',0,h);
-    document.getElementById('game-result').innerText=result;
-    playAnimation(result,document.getElementById('game-animation'));
-    ting.play();
-    updateDash();
-  });
-
-  document.getElementById('dice-btn').addEventListener('click',()=>{
-    if(!currentUser){alert('Vui lòng đăng nhập'); return;}
-    if(users[currentUser].pcoin<3){alert('Không đủ Pcoin'); return;}
-    users[currentUser].pcoin-=3;
-    const r=Math.random(); let h=0,result='';
-    if(r<0.4){result='Thua, +1 Pcoin';h=1;}
-    else{result='Thắng, +5 Pcoin';h=5;}
-    users[currentUser].pcoin+=h;
-    addHistory('Tung xúc xắc',0,h);
-    document.getElementById('game-result').innerText=result;
-    playAnimation(result,document.getElementById('game-animation'));
-    ting.play();
-    updateDash();
-  });
-
-  document.getElementById('cow-btn').addEventListener('click',()=>{
-    if(!currentUser){alert('Vui lòng đăng nhập'); return;}
-    if(users[currentUser].pcoin<15){alert('Không đủ Pcoin'); return;}
-    users[currentUser].pcoin-=15;
-    const r=Math.random(); let h=0,result='';
-    if(r<0.2){result='Kéo được bò nhỏ +20 Pcoin';h=20;}
-    else if(r<0.4){result='Kéo được bò to +50 Pcoin';h=50;}
-    else{result='Ra rác, không được gì';h=0;}
-    users[currentUser].pcoin+=h;
-    addHistory('Kéo bò',0,h);
-    document.getElementById('game-result').innerText=result;
-    playAnimation(result,document.getElementById('game-animation'));
-    ting.play();
-    updateDash();
-  });
-
-  // Exchange
-  document.getElementById('exchange-btn').addEventListener('click',()=>{
-    if(!currentUser){alert('Vui lòng đăng nhập'); return;}
-    const amount=parseInt(document.getElementById('exchange-amount').value);
-    if(isNaN(amount)||amount<1){alert('Nhập số hợp lệ');return;}
-    if(users[currentUser].pcoin<amount){alert('Pcoin không đủ');return;}
-    users[currentUser].pcoin-=amount;
-    const vnd=Math.floor(amount/10000*1000); // 10000 Pcoin = 1k VND
-    addHistory('Đổi Pcoin',0,-amount);
-    document.getElementById('exchange-result').innerText=`Đã đổi ${amount} Pcoin lấy ${vnd} VNĐ`;
-    updateDash();
-  });
-
-  updateDash();
+// ===================== Firebase Config =====================
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_DOMAIN",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_BUCKET",
+  messagingSenderId: "YOUR_SENDER",
+  appId: "YOUR_APP_ID"
 };
-</script>
-</body>
-</html>
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+// ===================== Tab Navigation =====================
+const tabs = document.querySelectorAll('.tab');
+const navButtons = document.querySelectorAll('nav button');
+navButtons.forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    navButtons.forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const target = btn.dataset.tab;
+    tabs.forEach(t=>t.classList.remove('active'));
+    document.getElementById(target).classList.add('active');
+  });
+});
+
+// ===================== Dark/Light Mode =====================
+document.getElementById('toggle-dark').addEventListener('click', ()=>{
+  document.body.classList.toggle('dark');
+});
+
+// ===================== Authentication =====================
+let currentUser = null;
+
+function updateDash(userData){
+  if(currentUser){
+    document.getElementById('auth-section').style.display='none';
+    document.getElementById('dash-section').style.display='block';
+    document.getElementById('user-name').innerText=currentUser.displayName||currentUser.email;
+    document.getElementById('coin').innerText=userData.coin||0;
+    document.getElementById('pcoin').innerText=userData.pcoin||0;
+    document.getElementById('spin-count').innerText=userData.spinCount||0;
+    updateHistoryTable(userData.history||[]);
+  } else {
+    document.getElementById('auth-section').style.display='block';
+    document.getElementById('dash-section').style.display='none';
+  }
+}
+
+// ===================== Register/Login =====================
+document.getElementById('register-btn').addEventListener('click', ()=>{
+  const email = document.getElementById('reg-user').value.trim()+"@example.com";
+  const pass = document.getElementById('reg-pass').value.trim();
+  if(!email||!pass){alert('Nhập đầy đủ');return;}
+  auth.createUserWithEmailAndPassword(email, pass).then(cred=>{
+    currentUser = cred.user;
+    db.collection('users').doc(currentUser.uid).set({coin:0,pcoin:0,spinCount:0,history:[]});
+    updateDash({coin:0,pcoin:0,spinCount:0,history:[]});
+  }).catch(err=>alert(err.message));
+});
+
+document.getElementById('login-btn').addEventListener('click', ()=>{
+  const email = document.getElementById('login-user').value.trim()+"@example.com";
+  const pass = document.getElementById('login-pass').value.trim();
+  auth.signInWithEmailAndPassword(email, pass).then(cred=>{
+    currentUser = cred.user;
+    db.collection('users').doc(currentUser.uid).get().then(doc=>{
+      if(doc.exists){
+        updateDash(doc.data());
+      }
+    });
+  }).catch(err=>alert(err.message));
+});
+
+document.getElementById('logout-btn').addEventListener('click', ()=>{
+  auth.signOut().then(()=>{
+    currentUser = null;
+    updateDash({});
+  });
+});
+
+// ===================== Helper =====================
+const ting = document.getElementById('ting-sound');
+
+function updateHistoryTable(history){
+  const table=document.getElementById('history-table');
+  table.innerHTML='<tr><th>Thời gian</th><th>Sự kiện</th><th>Coin/Pcoin</th></tr>';
+  history.slice().reverse().forEach(h=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td>${h.time}</td><td>${h.event}</td><td>${h.coinChange>0?'+':''}${h.coinChange} / ${h.p
