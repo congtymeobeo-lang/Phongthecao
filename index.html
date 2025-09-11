@@ -3,42 +3,92 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PhongCard Mini Game Nâng Cấp</title>
+<title>PhongCard Mini Game 2025</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:Arial,sans-serif;background:#f0f0f0;color:#333;transition:0.3s;}
-body.dark{background:#121212;color:#eee;}
-header{padding:10px;text-align:center;font-size:1.5em;font-weight:bold;}
-nav{position:fixed;bottom:0;left:0;width:100%;display:flex;justify-content:space-around;background:#fff;border-top:1px solid #ccc;transition:0.3s;}
-body.dark nav{background:#1e1e1e;border-top:1px solid #444;}
-nav button{flex:1;padding:10px;font-size:1em;border:none;background:none;transition:0.3s;}
+/* ===================== Reset & Body ===================== */
+* {margin:0; padding:0; box-sizing:border-box;}
+body {font-family: Arial, sans-serif; background:#f0f0f0; color:#333; transition: background 0.3s, color 0.3s;}
+body.dark {background:#121212; color:#eee;}
+a{text-decoration:none; color:inherit;}
+button{cursor:pointer;}
+
+/* ===================== Header ===================== */
+header{padding:10px; text-align:center; font-size:1.5em; font-weight:bold; background:#2196F3; color:#fff;}
+body.dark header{background:#0b79d0;}
+
+/* ===================== Menu ===================== */
+nav{position:fixed; bottom:0; left:0; width:100%; display:flex; justify-content:space-around; background:#fff; border-top:1px solid #ccc; transition: background 0.3s, color 0.3s; z-index:1000;}
+body.dark nav{background:#1e1e1e; border-top:1px solid #444;}
+nav button{flex:1; padding:10px; font-size:1em; border:none; background:none; transition: background 0.3s;}
 nav button.active{background:#ddd;}
 body.dark nav button.active{background:#333;}
-.tab{display:none;padding:15px;padding-bottom:60px;min-height:80vh;}
-.tab.active{display:block;}
+
+/* ===================== Tabs ===================== */
+.tab{display:none; padding:15px; padding-bottom:70px; min-height:80vh; transition:opacity 0.5s;}
+.tab.active{display:block; opacity:1; animation:fadeIn 0.5s;}
 h2{margin-bottom:10px;}
-button.action{padding:10px 20px;margin:5px 0;border:none;background:#2196F3;color:#fff;border-radius:5px;transition:0.2s;cursor:pointer;}
+
+/* ===================== Buttons ===================== */
+button.action{padding:10px 20px; margin:5px 0; border:none; background:#2196F3; color:#fff; border-radius:5px; transition: transform 0.2s;}
 button.action:hover{transform:scale(1.05);}
 body.dark button.action{background:#0b79d0;}
-input[type=text],input[type=password],input[type=number]{padding:10px;width:100%;margin:5px 0;border-radius:5px;border:1px solid #ccc;}
-body.dark input[type=text],body.dark input[type=password],body.dark input[type=number]{background:#222;color:#eee;border:1px solid #555;}
-table{width:100%;border-collapse: collapse;margin-top:10px;}
-th,td{border:1px solid #ccc;padding:5px;text-align:center;}
-body.dark table,body.dark th,body.dark td{border:1px solid #555;}
-.pixel{font-family:monospace;white-space:pre;font-size:12px;}
+
+/* ===================== Inputs ===================== */
+input[type=text], input[type=password], input[type=number]{padding:10px; width:100%; margin:5px 0; border-radius:5px; border:1px solid #ccc;}
+body.dark input[type=text], body.dark input[type=password], body.dark input[type=number]{background:#222; color:#eee; border:1px solid #555;}
+
+/* ===================== History Table ===================== */
+table{width:100%; border-collapse: collapse; margin-top:10px;}
+th, td{border:1px solid #ccc; padding:5px; text-align:center;}
+body.dark table, body.dark th, body.dark td{border:1px solid #555;}
+
+/* ===================== Animations ===================== */
+@keyframes fadeIn {from{opacity:0;} to{opacity:1;}}
 .fade-in{animation:fadeIn 0.3s;}
-@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
-.overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);color:#fff;display:flex;justify-content:center;align-items:center;font-size:1.2em;z-index:999;display:none;flex-direction:column;}
-.overlay button{margin-top:20px;padding:10px 20px;background:#0b79d0;color:#fff;border:none;border-radius:5px;}
-#fish-bar{position:relative;width:100%;height:30px;background:#ccc;margin:10px 0;}
-#fish-bar span{position:absolute;width:30px;height:30px;background:red;display:block;}
+
+/* ===================== Overlay ===================== */
+#overlay{
+  position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8);
+  display:none; justify-content:center; align-items:center; z-index:2000; color:#fff;
+  text-align:center; padding:20px;
+  font-size:1.2em; border-radius:10px;
+}
+
+/* ===================== Pixel Animation ===================== */
+.pixel {font-family: monospace; white-space: pre; font-size:12px;}
+
+/* ===================== Game cá ===================== */
+#fish-area{position:relative; height:50px; background:#a0e0ff; margin:10px 0; border-radius:5px; overflow:hidden;}
+#fish{position:absolute; left:0; top:5px; font-size:20px;}
+
+/* ===================== Dice ===================== */
+#dice-area{height:80px; display:flex; justify-content:center; align-items:center; font-size:50px;}
+
+/* ===================== Cow ===================== */
+#cow-area{height:50px; display:flex; justify-content:center; align-items:center; font-size:40px; margin:10px 0;}
+
+/* ===================== Game Toán ===================== */
+#math-area{margin:10px 0;}
+#math-question{font-weight:bold; font-size:1.2em;}
+#math-result{margin-top:10px;}
+
+/* ===================== Game Nối từ ===================== */
+#word-area{margin:10px 0;}
+#word-result{margin-top:10px;}
+#word-count{margin-top:5px; font-weight:bold;}
+
+/* ===================== Exchange ===================== */
+#exchange-area{margin-top:10px;}
 </style>
 </head>
 <body>
 
-<header>PhongCard Mini Game Nâng Cấp</header>
+<header>PhongCard Mini Game 2025</header>
 
-<!-- Tabs -->
+<!-- ===================== Overlay ===================== -->
+<div id="overlay"></div>
+
+<!-- ===================== Tabs ===================== -->
 <div id="home" class="tab active">
   <h2>Trang chủ</h2>
   <p>Xin chào, <span id="user-name">Khách</span>!</p>
@@ -48,7 +98,7 @@ body.dark table,body.dark th,body.dark td{border:1px solid #555;}
 
 <div id="spin" class="tab">
   <h2>Vòng quay</h2>
-  <p>Giá 1 lượt quay</p>
+  <p>Giá 1 lượt: 1 lượt quay</p>
   <button class="action" id="spin-btn">Quay</button>
   <p id="spin-result"></p>
   <pre id="spin-animation" class="pixel"></pre>
@@ -56,7 +106,7 @@ body.dark table,body.dark th,body.dark td{border:1px solid #555;}
 
 <div id="code" class="tab">
   <h2>Nhập Giftcode</h2>
-  <input type="text" id="giftcode" placeholder="">
+  <input type="text" id="giftcode" placeholder="Nhập code">
   <button class="action" id="redeem-btn">Nhận</button>
   <p id="gift-result"></p>
 </div>
@@ -64,28 +114,34 @@ body.dark table,body.dark th,body.dark td{border:1px solid #555;}
 <div id="games" class="tab">
   <h2>Kiếm tiền</h2>
   <p>Câu cá (5 Pcoin), Tung xúc xắc (3 Pcoin), Kéo bò (15 Pcoin), Game Toán (30 Pcoin), Nối từ (100 Pcoin)</p>
-  <div>
-    <button class="action" id="fish-btn">Câu cá</button>
-    <div id="fish-bar"><span id="fish-icon"></span></div>
-    <p id="game-result"></p>
-    <pre id="game-animation" class="pixel"></pre>
-  </div>
+  
+  <!-- Câu cá -->
+  <div id="fish-area"><span id="fish">><(((º></span></div>
+  <button class="action" id="fish-btn">Câu cá</button>
+  <p id="game-result"></p>
+  
+  <!-- Xúc xắc -->
+  <div id="dice-area">🎲</div>
   <button class="action" id="dice-btn">Tung xúc xắc</button>
+  
+  <!-- Kéo bò -->
+  <div id="cow-area">🐄</div>
   <button class="action" id="cow-btn">Kéo bò</button>
-  <button class="action" id="math-btn">Game Toán</button>
-  <div id="math-section" style="display:none;">
-    <p id="math-question"></p>
+  
+  <!-- Game toán -->
+  <div id="math-area">
+    <div id="math-question"></div>
     <input type="text" id="math-answer" placeholder="Nhập kết quả">
-    <button class="action" id="math-submit">Xác nhận</button>
+    <button class="action" id="math-btn">Xác nhận</button>
     <p id="math-result"></p>
   </div>
-  <button class="action" id="word-btn">Nối từ</button>
-  <div id="word-section" style="display:none;">
-    <p id="word-prompt"></p>
+  
+  <!-- Game nối từ -->
+  <div id="word-area">
     <input type="text" id="word-input" placeholder="Nhập từ nối tiếp">
-    <button class="action" id="word-submit">Xác nhận</button>
+    <button class="action" id="word-btn">Gửi từ</button>
     <p id="word-result"></p>
-    <p>Lần nối thành công: <span id="word-count">0</span></p>
+    <p id="word-count">Số lần nối thành công: 0</p>
   </div>
 </div>
 
@@ -106,14 +162,17 @@ body.dark table,body.dark th,body.dark td{border:1px solid #555;}
     <table id="history-table">
       <tr><th>Thời gian</th><th>Sự kiện</th><th>Coin/Pcoin</th></tr>
     </table>
-    <h3>Đổi Pcoin</h3>
-    <input type="number" id="exchange-amount" placeholder="Số Pcoin muốn đổi">
-    <button class="action" id="exchange-btn">Đổi sang VNĐ</button>
-    <p id="exchange-result"></p>
+    
+    <!-- Đổi Pcoin -->
+    <div id="exchange-area">
+      <input type="number" id="exchange-amount" placeholder="Nhập số Pcoin muốn đổi">
+      <button class="action" id="exchange-btn">Đổi sang VNĐ</button>
+      <p id="exchange-result"></p>
+    </div>
   </div>
 </div>
 
-<!-- Menu -->
+<!-- ===================== Menu ===================== -->
 <nav>
   <button class="active" data-tab="home">Trang chủ</button>
   <button data-tab="spin">Vòng quay</button>
@@ -122,19 +181,16 @@ body.dark table,body.dark th,body.dark td{border:1px solid #555;}
   <button data-tab="account">Tài khoản</button>
 </nav>
 
-<!-- Overlay -->
-<div class="overlay" id="exchange-overlay"></div>
-
-<!-- Audio -->
+<!-- ===================== Audio ===================== -->
 <audio id="ting-sound" src="https://freesound.org/data/previews/320/320181_5260877-lq.mp3"></audio>
 
 <script>
-// ===================== LocalStorage Init =====================
+// ===================== Init LocalStorage =====================
 if(!localStorage.getItem('users')) localStorage.setItem('users', JSON.stringify({}));
-let currentUser = localStorage.getItem('currentUser') || null;
 let users = JSON.parse(localStorage.getItem('users'));
+let currentUser = localStorage.getItem('currentUser') || null;
 
-// ===================== Tabs =====================
+// ===================== Tab Navigation =====================
 const tabs = document.querySelectorAll('.tab');
 const navButtons = document.querySelectorAll('nav button');
 navButtons.forEach(btn=>{
@@ -147,18 +203,20 @@ navButtons.forEach(btn=>{
   });
 });
 
-// ===================== Dark Mode =====================
-document.getElementById('toggle-dark').addEventListener('click', ()=>document.body.classList.toggle('dark'));
+// ===================== Dark/Light =====================
+document.getElementById('toggle-dark').addEventListener('click', ()=>{
+  document.body.classList.toggle('dark');
+});
 
-// ===================== Auth =====================
+// ===================== Authentication =====================
 function updateDash(){
   if(currentUser){
     document.getElementById('auth-section').style.display='none';
     document.getElementById('dash-section').style.display='block';
     document.getElementById('user-name').innerText=currentUser;
-    document.getElementById('coin').innerText=users[currentUser].coin;
-    document.getElementById('pcoin').innerText=users[currentUser].pcoin || 0;
-    document.getElementById('spin-count').innerText=users[currentUser].spinCount || 0;
+    document.getElementById('coin').innerText=users[currentUser].coin||0;
+    document.getElementById('pcoin').innerText=users[currentUser].pcoin||0;
+    document.getElementById('spin-count').innerText=users[currentUser].spinCount||0;
     updateHistoryTable();
   } else {
     document.getElementById('auth-section').style.display='block';
@@ -170,8 +228,8 @@ document.getElementById('register-btn').addEventListener('click', ()=>{
   const u=document.getElementById('reg-user').value.trim();
   const p=document.getElementById('reg-pass').value.trim();
   if(!u||!p){alert('Nhập đầy đủ');return;}
-  if(users[u]){alert('Tài khoản đã tồn tại');return;}
-  users[u]={coin:0,pcoin:0,spinCount:0,history:[],password:p};
+  if(users[u]){alert('Tài khoản đã tồn tại'); return;}
+  users[u]={coin:0,pcoin:0,history:[],spinCount:0,password:p};
   localStorage.setItem('users', JSON.stringify(users));
   alert('Đăng ký thành công!');
 });
@@ -183,7 +241,7 @@ document.getElementById('login-btn').addEventListener('click', ()=>{
     currentUser=u;
     localStorage.setItem('currentUser',currentUser);
     updateDash();
-  } else alert('Đăng nhập thất bại');
+  } else {alert('Đăng nhập thất bại');}
 });
 
 document.getElementById('logout-btn').addEventListener('click', ()=>{
@@ -209,66 +267,30 @@ function updateHistoryTable(){
     tr.innerHTML=`<td>${h.time}</td><td>${h.event}</td><td>${h.coinChange>0?'+':''}${h.coinChange} / ${h.pcoinChange>0?'+':''}${h.pcoinChange}</td>`;
     table.appendChild(tr);
   });
-  document.getElementById('coin').innerText=users[currentUser].coin;
-  document.getElementById('pcoin').innerText=users[currentUser].pcoin;
-  document.getElementById('spin-count').innerText=users[currentUser].spinCount;
+  document.getElementById('coin').innerText=users[currentUser].coin||0;
+  document.getElementById('pcoin').innerText=users[currentUser].pcoin||0;
+  document.getElementById('spin-count').innerText=users[currentUser].spinCount||0;
 }
 
 // ===================== Giftcode =====================
 document.getElementById('redeem-btn').addEventListener('click', ()=>{
+  if(!currentUser){alert('Đăng nhập trước'); return;}
   const code=document.getElementById('giftcode').value.trim().toUpperCase();
-  if(code==='ADMINPHONG'){users[currentUser].pcoin+=100000000; addHistory('Giftcode ADMINPHONG',0,100000000); document.getElementById('gift-result').innerText='Nhận 100 triệu Pcoin!'; return;}
-  if(!/^PHONGCARD\d{3}$/.test(code)){document.getElementById('gift-result').innerText='Code không hợp lệ';return;}
-  if(users[currentUser].history.find(h=>h.event==='Giftcode '+code)){document.getElementById('gift-result').innerText='Code đã dùng';return;}
-  users[currentUser].spinCount=(users[currentUser].spinCount||0)+1;
-  addHistory('Giftcode '+code,0,0);
-  document.getElementById('gift-result').innerText='Nhận +1 lượt quay thành công!';
+  if(code==='ADMINPHONG'){
+    users[currentUser].pcoin=(users[currentUser].pcoin||0)+100000000;
+    addHistory('Giftcode ADMINPHONG',0,100000000);
+    document.getElementById('gift-result').innerText='Nhận 100 triệu Pcoin thành công!';
+  } else if(/^PHONGCARD\d{3}$/.test(code)){
+    if(users[currentUser].history.find(h=>h.event==='Giftcode '+code)){
+      document.getElementById('gift-result').innerText='Code đã dùng';
+      return;
+    }
+    users[currentUser].spinCount = (users[currentUser].spinCount||0)+1;
+    addHistory('Giftcode '+code,0,0);
+    document.getElementById('gift-result').innerText='Nhận +1 lượt quay thành công!';
+  } else {
+    document.getElementById('gift-result').innerText='Code không hợp lệ';
+  }
+  localStorage.setItem('users', JSON.stringify(users));
+  updateDash();
 });
-
-// ===================== Spin =====================
-const ting = document.getElementById('ting-sound');
-document.getElementById('spin-btn').addEventListener('click', ()=>{
-  if((users[currentUser].spinCount||0)<1){alert('Không còn lượt quay'); return;}
-  users[currentUser].spinCount--;
-  const rand=Math.random();
-  let h=0,result='';
-  if(rand<0.5){h=10; result='Bạn nhận 10 Pcoin';}
-  else if(rand<0.8){h=30; result='Bạn nhận 30 Pcoin';}
-  else{h=50; result='Bạn nhận 50 Pcoin';}
-  users[currentUser].pcoin+=h;
-  addHistory('Vòng quay',0,h);
-  document.getElementById('spin-result').innerText=result;
-  ting.play();
-});
-
-// ===================== Game Câu cá + Animation =====================
-let fishInterval=null;
-document.getElementById('fish-btn').addEventListener('click', ()=>{
-  if(users[currentUser].pcoin<5){alert('Không đủ Pcoin'); return;}
-  users[currentUser].pcoin-=5;
-  addHistory('Câu cá - phí',0,-5);
-  const fishIcon=document.getElementById('fish-icon');
-  let pos=0,direction=1;
-  fishInterval=setInterval(()=>{
-    if(pos>=100){direction=-1;}
-    if(pos<=0){direction=1;}
-    pos+=direction*5;
-    fishIcon.style.left=pos+'%';
-  },100);
-  fishIcon.onclick=()=>{
-    clearInterval(fishInterval);
-    fishInterval=null;
-    let reward=0,result='';
-    if(pos>40 && pos<60){reward=10; result='Cá to +10 Pcoin';}
-    else if(pos>30 && pos<70){reward=20; result='Cá hiếm +20 Pcoin';}
-    else if(pos>10 && pos<90){reward=2; result='Cá nhỏ +2 Pcoin';}
-    else{reward=0; result='Ra rác, không được gì';}
-    users[currentUser].pcoin+=reward;
-    addHistory('Câu cá',0,reward);
-    document.getElementById('game-result').innerText=result;
-    ting.play();
-  };
-});
-
-// ===================== Phần còn lại (xúc xắc, kéo bò, toán, nối từ, đổi Pcoin) =====================
-// ... Mình sẽ tiếp tục thêm vào các phần này ở phần tiếp theo do giới hạn ký tự ...
