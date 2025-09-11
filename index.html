@@ -1,406 +1,223 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>PhongCard — Siêu mượt (LoFi)</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --bg:#071026; --card:#0f1a2a; --muted:#9fb3c8;
-    --accent1:#60a5fa; --accent2:#6ee7b7; --accent3:#a78bfa;
-    --glass: rgba(255,255,255,0.03);
-  }
-  *{box-sizing:border-box}
-  body{margin:0;font-family:Inter,system-ui,Segoe UI,Arial;color:#e6f2fb;background:var(--bg);-webkit-font-smoothing:antialiased}
-  /* Header */
-  header{height:64px;display:flex;align-items:center;padding:0 16px;border-bottom:1px solid rgba(255,255,255,0.02);gap:12px}
-  .logo{width:44px;height:44;background:linear-gradient(135deg,var(--accent2),var(--accent3));border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;color:#042}
-  .brand{display:flex;flex-direction:column}
-  .title{font-weight:700}
-  .subtitle{font-size:12px;color:var(--muted)}
-  .sp{flex:1}
-  .top-actions{display:flex;gap:8px;align-items:center}
-  .btn{background:transparent;border:0;color:var(--muted);padding:8px 10px;border-radius:10px;cursor:pointer}
-  .btn-primary{background:linear-gradient(90deg,var(--accent2),var(--accent1));border:0;padding:9px 12px;border-radius:10px;color:#042;font-weight:700;cursor:pointer}
-  /* App layout (single-column for simplicity) */
-  .wrap{max-width:1040px;margin:16px auto;padding:12px;display:grid;grid-template-columns:1fr 360px;gap:16px}
-  @media(max-width:960px){ .wrap{grid-template-columns:1fr;padding:12px} .right-col{order:2} .left-col{order:1} }
-  .card{background:linear-gradient(180deg,var(--glass), rgba(255,255,255,0.01));padding:16px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
-  h2{margin:0 0 8px 0}
-  .muted{color:var(--muted);font-size:14px}
-  input,textarea,select{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit;margin-top:8px}
-  .row{display:flex;gap:8px;align-items:center}
-  .small{font-size:13px;color:var(--muted)}
-  /* Sections (pages) */
-  .section{display:none;opacity:0;transform:translateY(8px);transition:all .36s ease}
-  .section.active{display:block;opacity:1;transform:none}
-  /* Wheel */
-  .wheel-wrap{display:flex;flex-direction:column;align-items:center;gap:12px}
-  .wheel{width:320px;height:320px;border-radius:50%;overflow:hidden;border:10px solid rgba(255,255,255,0.03);position:relative;transition:transform 4s cubic-bezier(.2,.9,.2,1)}
-  .pointer{width:0;height:0;border-left:18px solid transparent;border-right:18px solid transparent;border-bottom:28px solid var(--accent2);margin-bottom:-8px}
-  .slice{position:absolute;width:50%;height:50%;left:50%;top:50%;transform-origin:0 0;display:flex;align-items:center;justify-content:center;font-weight:700}
-  .spin-btn{padding:12px 18px;border-radius:12px;border:0;background:linear-gradient(90deg,var(--accent1),var(--accent2));color:#022;font-weight:800;cursor:pointer}
-  /* History */
-  .history-list{max-height:420px;overflow:auto;padding:8px;background:rgba(0,0,0,0.08);border-radius:8px}
-  .history-item{padding:10px;border-radius:8px;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);margin-bottom:8px}
-  /* Bottom nav */
-  .bottom-nav{position:fixed;left:50%;transform:translateX(-50%);bottom:14px;width:min(980px,96%);display:flex;justify-content:space-between;background:linear-gradient(180deg,rgba(0,0,0,0.22),rgba(0,0,0,0.12));padding:8px;border-radius:14px;border:1px solid rgba(255,255,255,0.03);z-index:80}
-  .nav-item{flex:1;text-align:center;padding:8px;border-radius:10px;color:var(--muted);cursor:pointer}
-  .nav-item.active{background:linear-gradient(90deg,var(--accent2),var(--accent1));color:#022;font-weight:700}
-  .nav-item .icon{font-size:18px;display:block}
-  /* Modal */
-  .modal-back{position:fixed;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:200}
-  .modal{width:420px;max-width:94%;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:18px;border-radius:12px}
-  /* Loading overlay */
-  .loading-overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(0deg, rgba(2,6,23,0.6), rgba(2,6,23,0.4));z-index:150;opacity:0;pointer-events:none;transition:opacity .25s ease}
-  .loading-overlay.show{opacity:1;pointer-events:auto}
-  .loader{background:linear-gradient(135deg,var(--accent2),var(--accent1));padding:14px;border-radius:12px;font-weight:800;color:#042}
-  /* upload preview */
-  .bg-preview{width:100%;height:140px;border-radius:10px;background-size:cover;background-position:center;margin-top:10px;border:1px solid rgba(255,255,255,0.03)}
-  /* audio control */
-  #musicBtn{padding:8px 10px;border-radius:10px;border:0;background:linear-gradient(90deg,var(--accent3),var(--accent1));color:#022;font-weight:700;cursor:pointer}
-  /* small */
-  .muted-note{color:var(--muted);font-size:13px}
-  @media(max-width:760px){ .wrap{grid-template-columns:1fr;padding:12px} .bottom-nav{bottom:8px} .wheel{width:260px;height:260px} }
-</style>
+  <meta charset="UTF-8">
+  <title>Phong Dashboard</title>
+  <style>
+    * {margin:0; padding:0; box-sizing:border-box; font-family:sans-serif;}
+    body, html {height:100%; background:#111; color:#fff; overflow:hidden;}
+    .hidden {display:none;}
+    .center {display:flex; align-items:center; justify-content:center; height:100%; flex-direction:column;}
+
+    /* Loading */
+    #loading {position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;z-index:99;font-size:22px;}
+    #loading.hidden {display:none;}
+
+    /* Sections */
+    section {position:absolute; top:0; left:0; right:0; bottom:60px; padding:20px; overflow-y:auto; display:none; animation:fade .4s;}
+    section.active {display:block;}
+    @keyframes fade {from{opacity:0;} to{opacity:1;}}
+
+    /* Menu dưới */
+    .navbar {position:fixed; bottom:0; left:0; right:0; height:60px; background:#222; display:flex; justify-content:space-around; align-items:center; border-top:2px solid #444;}
+    .navbar button {background:none; border:none; color:#aaa; font-size:18px; flex:1; height:100%;}
+    .navbar button.active {color:#0f0; border-top:3px solid #0f0;}
+
+    /* Login */
+    #login-section input {margin:6px 0; padding:8px; width:220px; border-radius:8px; border:none;}
+    #login-section button {margin-top:10px; padding:8px 16px; border:none; border-radius:8px; background:#0f0; color:#000; cursor:pointer;}
+
+    /* Home */
+    #home {background:url('https://i.ibb.co/0m9P9t6/cat.jpg') center/cover no-repeat;}
+
+    /* Giftcode */
+    #giftcode input {padding:8px; border-radius:6px; border:none; margin-right:10px;}
+    #giftcode button {padding:8px 14px; border:none; border-radius:6px; background:#0f0; color:#000;}
+    .shake {animation:shake .3s;}
+    @keyframes shake {0%{transform:translateX(0);}25%{transform:translateX(-5px);}50%{transform:translateX(5px);}75%{transform:translateX(-5px);}100%{transform:translateX(0);}}
+
+    /* Quay */
+    #wheel {width:250px;height:250px;border-radius:50%;border:8px solid #fff;position:relative;margin:20px auto;background:conic-gradient(#f00 0 60deg,#0f0 60deg 180deg,#00f 180deg 300deg,#ff0 300deg 360deg);}
+    #pointer {width:0;height:0;border-left:15px solid transparent;border-right:15px solid transparent;border-bottom:30px solid #fff;position:absolute;top:-35px;left:calc(50% - 15px);}
+    #spin-btn {padding:10px 20px;border:none;border-radius:10px;background:#0f0;color:#000;cursor:pointer;}
+    #result {margin-top:15px;font-size:20px;}
+
+    /* History */
+    #history-list {list-style:none;padding:0;}
+    #history-list li {background:#222;margin:6px 0;padding:10px;border-radius:8px;animation:fade .5s;}
+
+    /* Account */
+    #account p {margin:10px 0;}
+    #logout-btn {padding:8px 16px;border:none;border-radius:8px;background:#f33;color:#fff;cursor:pointer;}
+
+    /* Music button */
+    #music-btn {position:fixed;top:10px;right:10px;padding:8px 12px;border:none;border-radius:20px;background:#0f0;color:#000;cursor:pointer;z-index:50;}
+  </style>
 </head>
 <body>
 
-<!-- Loading overlay for page transitions -->
-<div id="loadingOverlay" class="loading-overlay"><div class="loader">Đang tải...</div></div>
+<div id="loading">Loading...</div>
 
-<header>
-  <div class="logo">P</div>
-  <div class="brand">
-    <div class="title">PhongCard</div>
-    <div class="subtitle small">Shop giftcode • Quay thưởng</div>
-  </div>
-  <div class="sp"></div>
-  <div class="top-actions">
-    <button id="imgUploadBtn" class="btn" title="Upload ảnh">📁 Upload ảnh</button>
-    <button id="musicBtn" class="btn-primary">🔈 Nhạc: LoFi</button>
-  </div>
-</header>
+<!-- Login -->
+<section id="login-section" class="center active">
+  <h2>Đăng nhập / Đăng ký</h2>
+  <input id="username" placeholder="Tài khoản">
+  <input id="password" type="password" placeholder="Mật khẩu">
+  <button onclick="login()">Vào Dashboard</button>
+</section>
 
-<main class="wrap">
-  <!-- LEFT column (main pages) -->
-  <div class="left-col">
+<!-- Home -->
+<section id="home">
+  <h1>Chào mừng bạn đến Dashboard 🐱</h1>
+  <p>Đây là trang chủ với ảnh mèo dễ thương.</p>
+</section>
 
-    <!-- HOME -->
-    <section id="homePage" class="card section active">
-      <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
-        <div style="flex:1">
-          <h2>Chào mừng đến PhongCard</h2>
-          <p class="muted">Dashboard anime — upload ảnh riêng cho từng trang, bật/tắt nhạc LoFi, đăng nhập để lưu lịch sử.</p>
-          <div style="display:flex;gap:12px;margin-top:12px;flex-wrap:wrap">
-            <div class="card" style="min-width:160px">
-              <div class="small">Tài khoản</div>
-              <div id="userBlock" style="font-weight:700;margin-top:8px">Chưa đăng nhập</div>
-            </div>
-            <div class="card" style="min-width:160px">
-              <div class="small">Lượt quay</div>
-              <div id="spinsBlock" style="font-weight:800;margin-top:8px">0</div>
-            </div>
-            <div class="card" style="min-width:160px">
-              <div class="small">Số dư</div>
-              <div id="balBlock" style="font-weight:800;margin-top:8px">0 VND</div>
-            </div>
-          </div>
-        </div>
-        <div style="width:220px">
-          <div class="card">
-            <div class="small">Ảnh Dashboard</div>
-            <div id="homePreview" class="bg-preview"></div>
-            <div class="muted-note" style="margin-top:8px">Bạn có thể upload ảnh (mèo) để làm background trang chào.</div>
-          </div>
-        </div>
-      </div>
-    </section>
+<!-- Giftcode -->
+<section id="giftcode">
+  <h2>Nhập Giftcode</h2>
+  <input id="code-input" placeholder="Nhập code">
+  <button onclick="redeem()">Nhận</button>
+  <p id="code-msg"></p>
+</section>
 
-    <!-- REDEEM -->
-    <section id="redeemPage" class="card section">
-      <h2>Nhập Giftcode</h2>
-      <p class="muted">Định dạng: <code>PHONGCARDxxx</code> | <code>PHONGVIPxxx</code> | <code>PHONGGIFTxxx</code></p>
-      <div class="row" style="margin-top:8px">
-        <input id="codeInput" placeholder="Nhập code...">
-        <button id="applyCode" class="btn-primary">Áp dụng</button>
-      </div>
-      <div id="redeemMsg" class="small" style="margin-top:8px"></div>
-      <div class="card" style="margin-top:12px">
-        <div class="small">Ảnh trang nhập code</div>
-        <div id="redeemPreview" class="bg-preview"></div>
-      </div>
-    </section>
+<!-- Quay thưởng -->
+<section id="spin">
+  <h2>Quay thưởng</h2>
+  <div id="wheel"><div id="pointer"></div></div>
+  <button id="spin-btn" onclick="spin()">Quay</button>
+  <div id="result"></div>
+</section>
 
-    <!-- WHEEL -->
-    <section id="wheelPage" class="card section">
-      <h2>Vòng quay may mắn</h2>
-      <p class="muted">Tỉ lệ: <b>10%</b> → 7k • <b>20%</b> → 5k • <b>40%</b> → 2k/3k/4k • <b>30%</b> → câu chuyện</p>
-      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:12px">
-        <div style="flex:1;min-width:300px">
-          <div class="wheel-wrap">
-            <div class="pointer"></div>
-            <div id="wheel" class="wheel" aria-hidden="true"></div>
-            <div style="display:flex;gap:8px;align-items:center;margin-top:8px">
-              <button id="spinBtn" class="spin-btn">Quay ngay</button>
-              <div id="spinInfo" class="small"></div>
-            </div>
-            <div id="spinResult" class="small" style="margin-top:8px"></div>
-          </div>
-        </div>
-        <div style="width:260px">
-          <div class="card">
-            <div class="small">VIP Boost</div>
-            <div id="vipFlag" class="muted-note" style="margin-top:8px"></div>
-          </div>
-          <div class="card" style="margin-top:12px">
-            <div class="small">Ảnh vòng quay</div>
-            <div id="wheelPreview" class="bg-preview"></div>
-          </div>
-        </div>
-      </div>
-    </section>
+<!-- History -->
+<section id="history">
+  <h2>Lịch sử phần thưởng</h2>
+  <ul id="history-list"></ul>
+</section>
 
-    <!-- HISTORY -->
-    <section id="historyPage" class="card section">
-      <h2>Lịch sử</h2>
-      <p class="muted">Lịch sử gắn với tài khoản (lưu local).</p>
-      <div id="historyList" class="history-list" style="margin-top:10px">Chưa có lịch sử</div>
-    </section>
+<!-- Account -->
+<section id="account">
+  <h2>Tài khoản</h2>
+  <p id="account-name"></p>
+  <button id="logout-btn" onclick="logout()">Đăng xuất</button>
+</section>
 
-    <!-- ACCOUNT -->
-    <section id="accountPage" class="card section">
-      <h2>Tài khoản</h2>
-      <div id="accountBox">
-        <div class="small">Bạn chưa đăng nhập</div>
-        <div style="margin-top:12px"><button id="openAuth" class="btn-primary">Đăng nhập / Đăng ký</button></div>
-      </div>
-      <div style="margin-top:12px" class="card">
-        <div class="small">Upload ảnh (dùng cho trang)</div>
-        <div style="display:flex;gap:8px;margin-top:8px">
-          <input type="file" id="uploadHome" accept="image/*">
-          <input type="file" id="uploadRedeem" accept="image/*">
-          <input type="file" id="uploadWheel" accept="image/*">
-        </div>
-        <div class="muted-note" style="margin-top:8px">Upload ảnh sẽ lưu vào localStorage cho trình duyệt này.</div>
-      </div>
-    </section>
-
-  </div>
-
-  <!-- RIGHT column (quick controls) -->
-  <aside class="right-col">
-    <div class="card">
-      <div class="small">Nhạc nền (LoFi)</div>
-      <div style="display:flex;gap:8px;align-items:center;margin-top:8px">
-        <button id="playMusic" class="btn-primary">Bật nhạc</button>
-        <button id="muteMusic" class="btn">Tắt nhạc</button>
-      </div>
-      <div class="small" style="margin-top:8px">Bạn có thể tắt/hủy nhạc hoặc thay link MP3 trong mã.</div>
-    </div>
-
-    <div class="card" style="margin-top:12px">
-      <div class="small">Nhập code nhanh</div>
-      <div style="display:flex;gap:8px;margin-top:8px">
-        <input id="sideCode" placeholder="NHẬP CODE">
-        <button id="sideApply" class="btn-primary">OK</button>
-      </div>
-      <div id="sideMsg" class="small" style="margin-top:8px"></div>
-    </div>
-
-    <div class="card" style="margin-top:12px">
-      <div class="small">Mini lịch sử</div>
-      <div id="miniHistory" class="history-list small" style="margin-top:8px">Chưa có</div>
-    </div>
-  </aside>
-</main>
-
-<!-- Bottom navigation -->
-<div class="bottom-nav" id="bottomNav">
-  <div class="nav-item active" data-target="homePage"><div class="icon">🏠</div><div class="small">Home</div></div>
-  <div class="nav-item" data-target="redeemPage"><div class="icon">📥</div><div class="small">Nhập mã</div></div>
-  <div class="nav-item" data-target="wheelPage"><div class="icon">🎡</div><div class="small">Quay</div></div>
-  <div class="nav-item" data-target="historyPage"><div class="icon">📜</div><div class="small">Lịch sử</div></div>
-  <div class="nav-item" data-target="accountPage" id="navAccount"><div class="icon">👤</div><div class="small">Tài khoản</div></div>
+<!-- Navbar -->
+<div class="navbar hidden" id="navbar">
+  <button onclick="showTab('home')" id="btn-home">🏠 Home</button>
+  <button onclick="showTab('giftcode')" id="btn-gift">🎁 Code</button>
+  <button onclick="showTab('spin')" id="btn-spin">🎡 Quay</button>
+  <button onclick="showTab('history')" id="btn-history">📜 Lịch sử</button>
+  <button onclick="showTab('account')" id="btn-account">👤 TK</button>
 </div>
 
-<!-- modals, loading -->
-<div id="modalRoot"></div>
-<div id="transitionLoader" class="loading-overlay"><div class="loader">Đang tải...</div></div>
-
-<!-- audio (LoFi from Pixabay - free) -->
-<audio id="bgMusic" loop>
-  <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_7b65e8c3f2.mp3?filename=lofi-chill-11293.mp3" type="audio/mpeg">
+<!-- Music -->
+<audio id="bg-music" loop>
+  <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_7b65e8c3f2.mp3" type="audio/mpeg">
 </audio>
+<button id="music-btn" onclick="toggleMusic()">🎶 Bật nhạc</button>
 
 <script>
-/* ============================
-   Data model + session
-   ============================ */
-const KEY = 'phongcard_full_v1';
-let DB = JSON.parse(localStorage.getItem(KEY) || '{}');
-if (!DB.users) DB.users = {};           // users[user] = {pass,spins,balance,vipBoost,history:[]}
-if (!DB.usedCodes) DB.usedCodes = [];   // used global codes
-if (!DB.images) DB.images = {};         // images: home, redeem, wheel (data URLs)
-if (!DB._seeded) {
-  // seed 30 sample PHONGCARD001..030 and a couple VIP/GIFT for test
-  for (let i=1;i<=30;i++){ DB['PHONGCARD' + String(i).padStart(3,'0')] = {type:'card'}; }
-  DB['PHONGVIP001'] = {type:'vip'}; DB['PHONGGIFT001'] = {type:'gift'};
-  DB._seeded = true;
-  localStorage.setItem(KEY, JSON.stringify(DB));
+let currentUser = null;
+let spinning = false;
+
+function login(){
+  const u=document.getElementById('username').value;
+  const p=document.getElementById('password').value;
+  if(!u||!p){alert("Nhập đủ tài khoản và mật khẩu!");return;}
+  localStorage.setItem('user',u);
+  currentUser=u;
+  document.getElementById('account-name').innerText="Xin chào, "+u;
+  document.getElementById('login-section').style.display="none";
+  document.getElementById('navbar').classList.remove('hidden');
+  showTab('home');
 }
-function saveDB(){ localStorage.setItem(KEY, JSON.stringify(DB)); }
 
-/* session */
-let current = localStorage.getItem(KEY + '_session') || null;
-if (current && !DB.users[current]) { current = null; localStorage.removeItem(KEY + '_session'); }
+function logout(){
+  localStorage.removeItem('user');
+  currentUser=null;
+  location.reload();
+}
 
-/* UI refs */
-const sections = document.querySelectorAll('.section');
-const navItems = document.querySelectorAll('.nav-item');
-const transitionLoader = document.getElementById('transitionLoader');
-const homePreview = document.getElementById('homePreview');
-const redeemPreview = document.getElementById('redeemPreview');
-const wheelPreview = document.getElementById('wheelPreview');
+window.onload=function(){
+  const u=localStorage.getItem('user');
+  if(u){currentUser=u;
+    document.getElementById('login-section').style.display="none";
+    document.getElementById('navbar').classList.remove('hidden');
+    document.getElementById('account-name').innerText="Xin chào, "+u;
+    showTab('home');
+  }
+}
 
-const userBlock = document.getElementById('userBlock');
-const spinsBlock = document.getElementById('spinsBlock');
-const balBlock = document.getElementById('balBlock');
+function showTab(id){
+  document.getElementById('loading').classList.remove('hidden');
+  setTimeout(()=>{
+    document.getElementById('loading').classList.add('hidden');
+    document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    document.querySelectorAll('.navbar button').forEach(b=>b.classList.remove('active'));
+    document.getElementById('btn-'+id).classList.add('active');
+  },400);
+}
 
-const codeInput = document.getElementById('codeInput');
-const applyCodeBtn = document.getElementById('applyCode');
-const redeemMsg = document.getElementById('redeemMsg');
+/* Giftcode */
+const codes=["Phongcard1","Phongcard2","Phongcard3"];
+function redeem(){
+  const val=document.getElementById('code-input').value;
+  const msg=document.getElementById('code-msg');
+  if(codes.includes(val)){
+    msg.innerText="Code hợp lệ! Bạn được +1 lượt quay.";
+    msg.style.color="#0f0";
+  }else{
+    msg.innerText="Code sai!";
+    msg.style.color="#f00";
+    document.getElementById('code-input').classList.add('shake');
+    setTimeout(()=>document.getElementById('code-input').classList.remove('shake'),300);
+  }
+}
 
-const sideCode = document.getElementById('sideCode');
-const sideApply = document.getElementById('sideApply');
-const sideMsg = document.getElementById('sideMsg');
+/* Spin */
+function spin(){
+  if(spinning) return;
+  spinning=true;
+  const wheel=document.getElementById('wheel');
+  const deg=360*5+Math.floor(Math.random()*360);
+  wheel.style.transition="transform 3s ease-out";
+  wheel.style.transform="rotate("+deg+"deg)";
+  setTimeout(()=>{
+    spinning=false;
+    const result=["7K","5K","2K","Câu chuyện"];
+    const r=result[Math.floor(Math.random()*result.length)];
+    document.getElementById('result').innerText="Bạn trúng: "+r;
+    addHistory(r);
+  },3000);
+}
 
-const historyList = document.getElementById('historyList');
-const miniHistory = document.getElementById('miniHistory');
-
-const spinBtn = document.getElementById('spinBtn');
-const wheelEl = document.getElementById('wheel');
-const spinInfo = document.getElementById('spinInfo');
-const spinResult = document.getElementById('spinResult');
-const vipFlag = document.getElementById('vipFlag');
-
-/* audio */
-const bgMusic = document.getElementById('bgMusic');
-const playMusicBtn = document.getElementById('playMusic');
-const muteMusicBtn = document.getElementById('muteMusic');
-const musicBtnTop = document.getElementById('musicBtn');
-
-/* uploads */
-const uploadHome = document.getElementById('uploadHome');
-const uploadRedeem = document.getElementById('uploadRedeem');
-const uploadWheel = document.getElementById('uploadWheel');
-const imgUploadBtn = document.getElementById('imgUploadBtn');
-
-/* auth */
-const openAuthBtn = document.getElementById('openAuth');
-const accountBox = document.getElementById('accountBox');
-
-/* bottom nav clicks */
-navItems.forEach(it => {
-  it.addEventListener('click', ()=> {
-    const tgt = it.dataset.target;
-    if (!tgt) return;
-    navItems.forEach(n=>n.classList.remove('active'));
-    it.classList.add('active');
-    navigateTo(tgt);
+/* History */
+function addHistory(prize){
+  let list=JSON.parse(localStorage.getItem('history_'+currentUser)||"[]");
+  list.push({item:prize,time:new Date().toLocaleString()});
+  localStorage.setItem('history_'+currentUser,JSON.stringify(list));
+  renderHistory();
+}
+function renderHistory(){
+  const list=JSON.parse(localStorage.getItem('history_'+currentUser)||"[]");
+  const ul=document.getElementById('history-list');
+  ul.innerHTML="";
+  list.forEach(h=>{
+    const li=document.createElement('li');
+    li.innerText=h.time+" → "+h.item;
+    ul.appendChild(li);
   });
-});
-
-/* initial: attach small handlers */
-document.getElementById('openAuth').addEventListener('click', openAuth);
-document.getElementById('imgUploadBtn').addEventListener('click', ()=> {
-  document.getElementById('uploadHome').click();
-});
-playMusicBtn.addEventListener('click', ()=> { bgMusic.play(); toast('Nhạc đang phát'); updateMusicButtons(); });
-muteMusicBtn.addEventListener('click', ()=> { bgMusic.pause(); toast('Nhạc tắt'); updateMusicButtons(); });
-musicBtnTop.addEventListener('click', ()=> { if (bgMusic.paused) { bgMusic.play(); toast('Nhạc đang phát') } else { bgMusic.pause(); toast('Nhạc tắt') } updateMusicButtons(); });
-
-applyCodeBtn.addEventListener('click', ()=> handleRedeem(codeInput.value));
-sideApply.addEventListener('click', ()=> handleRedeem(sideCode.value));
-
-uploadHome.addEventListener('change', (e)=> handleUpload(e, 'home'));
-uploadRedeem.addEventListener('change', (e)=> handleUpload(e, 'redeem'));
-uploadWheel.addEventListener('change', (e)=> handleUpload(e, 'wheel'));
-
-/* sample music auto-config */
-let userWantsAutoplay = false;
-bgMusic.volume = 0.45;
-
-/* ===========================
-   Helpers: navigation + transitions
-   =========================== */
-function showTransition(ms=420){
-  transitionLoader.classList.add('show');
-  return new Promise(res => setTimeout(()=>{ transitionLoader.classList.remove('show'); res(); }, ms));
 }
-async function navigateTo(sectionId){
-  await showTransition(380);
-  sections.forEach(s=> s.classList.remove('active'));
-  document.getElementById(sectionId).classList.add('active');
-  // if redeem focus input
-  if (sectionId === 'redeemPage') { setTimeout(()=> codeInput.focus(), 200); }
-  // if wheel ensure wheel render
-  if (sectionId === 'wheelPage'){ renderWheel(); }
-  // update UI
-  renderAll();
-}
+renderHistory();
 
-/* ===========================
-   Auth: register/login/logout
-   =========================== */
-function openAuth(){
-  const modal = document.createElement('div'); modal.className='modal-back';
-  modal.innerHTML = `<div class="modal">
-    <h3>Đăng nhập / Đăng ký</h3>
-    <input id="authUser" placeholder="Tên tài khoản (không dấu)">
-    <input id="authPass" placeholder="Mật khẩu" type="password">
-    <div style="display:flex;gap:8px;margin-top:12px">
-      <button id="btnDoLogin" class="btn-primary">Đăng nhập</button>
-      <button id="btnDoReg" class="btn">Đăng ký</button>
-      <button id="btnClose" class="btn">Đóng</button>
-    </div>
-    <div class="muted-note" style="margin-top:10px">Dữ liệu lưu cục bộ (LocalStorage).</div>
-  </div>`;
-  document.getElementById('modalRoot').appendChild(modal);
-  document.getElementById('btnClose').onclick = ()=> modal.remove();
-  document.getElementById('btnDoReg').onclick = ()=> {
-    const u = (document.getElementById('authUser').value||'').trim();
-    const p = (document.getElementById('authPass').value||'').trim();
-    if (!u || !p) return alert('Nhập tên & mật khẩu!');
-    if (DB.users[u]) return alert('Tài khoản đã tồn tại!');
-    DB.users[u] = { pass:p, spins:0, balance:0, vipBoost:false, history:[] };
-    saveDB();
-    current = u; localStorage.setItem(KEY + '_session', current); modal.remove(); toast('Đăng ký & đăng nhập: '+u); renderAll();
-    // after login go home
-    navigateTo('homePage');
-  };
-  document.getElementById('btnDoLogin').onclick = ()=> {
-    const u = (document.getElementById('authUser').value||'').trim();
-    const p = (document.getElementById('authPass').value||'').trim();
-    if (!DB.users[u] || DB.users[u].pass !== p) return alert('Sai tài khoản hoặc mật khẩu!');
-    current = u; localStorage.setItem(KEY + '_session', current); modal.remove(); toast('Đăng nhập: '+u); renderAll(); navigateTo('homePage');
-  };
+/* Music */
+const music=document.getElementById("bg-music");
+const btn=document.getElementById("music-btn");
+function toggleMusic(){
+  if(music.paused){music.play();btn.innerText="🔇 Tắt nhạc";}
+  else{music.pause();btn.innerText="🎶 Bật nhạc";}
 }
-
-function openAccountModal(){
-  if (!current) return openAuth();
-  const m = document.createElement('div'); m.className='modal-back';
-  const U = DB.users[current];
-  m.innerHTML = `<div class="modal">
-    <h3>Tài khoản: ${current}</h3>
-    <div class="small">Số dư: ${(U.balance||0).toLocaleString()} VND</div>
-    <div class="small">Lượt quay: ${(U.spins||0)}</div>
-    <div style="display:flex;gap:8px;margin-top:12px">
-      <button id="btnLogout" class="btn">Đăng xuất</button>
-      <button id="btnExport" class="btn">Export</button>
-      <button id="btnClose2" class="btn">Đóng</button>
-    </div>
-  </div>`;
-  document.getElementById('modalRoot').appendChild(m);
-  document.getElementById('btnClose2').onclick = ()=> m.remov
+</script>
+</body>
+</html>
