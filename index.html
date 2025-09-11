@@ -2,179 +2,215 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PhongCard</title>
+  <title>Retro Dashboard</title>
   <style>
-    body { margin:0; font-family:Arial, sans-serif; background:#121212; color:#fff; }
-    .hidden { display:none; }
-    header { text-align:center; padding:10px; background:#1f1f1f; font-size:18px; }
-    #coinDisplay { font-weight:bold; color:#ffd700; }
-    .content { padding:20px; }
-    nav { position:fixed; bottom:0; left:0; right:0; background:#1f1f1f; display:flex; justify-content:space-around; padding:10px 0; }
-    nav button { background:none; border:none; color:#fff; font-size:14px; flex:1; }
-    nav button.active { color:#ffd700; }
-    button.action { padding:10px 20px; background:#ffd700; border:none; border-radius:8px; font-weight:bold; margin:5px 0; }
-    .fade { animation:fadein 0.3s; }
-    @keyframes fadein { from{opacity:0} to{opacity:1} }
-    .history-item { border-bottom:1px solid #333; padding:5px 0; }
+    body {
+      font-family: 'Press Start 2P', monospace;
+      background: #1a1a1a;
+      color: #f0f0f0;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+    header {
+      background: #333;
+      padding: 10px;
+      font-size: 14px;
+    }
+    nav {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      background: #222;
+      padding: 10px;
+    }
+    nav button {
+      background: #444;
+      border: none;
+      padding: 10px 15px;
+      color: #fff;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    nav button:hover {
+      background: #666;
+    }
+    .hidden { display: none; }
+    .game-area {
+      margin: 20px;
+      padding: 20px;
+      border: 2px solid #555;
+      border-radius: 10px;
+      background: #2a2a2a;
+    }
+    #history-list {
+      text-align: left;
+      max-width: 500px;
+      margin: auto;
+    }
+    .story-detail {
+      background: #111;
+      padding: 10px;
+      border: 1px solid #555;
+      margin-top: 5px;
+    }
+    canvas {
+      background: #000;
+      margin: 10px auto;
+      display: block;
+    }
   </style>
 </head>
 <body>
   <header>
-    <span id="welcome">Chào mừng!</span> | 💰 <span id="coinDisplay">0</span>
+    <h1>🎮 Retro Dashboard 🎮</h1>
+    <div id="user-info"></div>
   </header>
-
-  <div id="home" class="content fade">Đây là Dashboard 🐱</div>
-
-  <div id="giftcode" class="content hidden fade">
-    <h2>Nhập Giftcode</h2>
-    <input id="giftInput" placeholder="Nhập code...">
-    <button class="action" onclick="redeemCode()">Nhận thưởng</button>
-    <p id="giftMsg"></p>
-  </div>
-
-  <div id="spin" class="content hidden fade">
-    <h2>Quay thưởng 🎡</h2>
-    <button class="action" onclick="spinWheel()">Quay</button>
-    <p id="spinResult"></p>
-  </div>
-
-  <div id="history" class="content hidden fade">
-    <h2>Lịch sử</h2>
-    <div id="historyList"></div>
-  </div>
-
-  <div id="earn" class="content hidden fade">
-    <h2>Kiếm tiền 💰</h2>
-    <button class="action" onclick="rollDice()">🎲 Tung xúc xắc</button>
-    <button class="action" onclick="goFishing()">🎣 Câu cá</button>
-    <p id="earnMsg"></p>
-  </div>
-
-  <div id="account" class="content hidden fade">
-    <h2>Tài khoản</h2>
-    <div id="authForms">
-      <input id="username" placeholder="Tên tài khoản"><br>
-      <input id="password" type="password" placeholder="Mật khẩu"><br>
-      <button class="action" onclick="register()">Đăng ký</button>
-      <button class="action" onclick="login()">Đăng nhập</button>
-    </div>
-    <div id="userPanel" class="hidden">
-      <p id="userInfo"></p>
-      <button class="action" onclick="logout()">Đăng xuất</button>
-    </div>
-  </div>
-
   <nav>
-    <button onclick="showTab('home')">🏠 Home</button>
-    <button onclick="showTab('giftcode')">🎁 Code</button>
-    <button onclick="showTab('spin')">🎡 Quay</button>
-    <button onclick="showTab('history')">📜 Lịch sử</button>
-    <button onclick="showTab('earn')">💰 Kiếm</button>
-    <button onclick="showTab('account')">👤 TK</button>
+    <button onclick="showPage('home')">🏠 Home</button>
+    <button onclick="showPage('spin')">🎡 Quay</button>
+    <button onclick="showPage('dice')">🎲 Xúc xắc</button>
+    <button onclick="showPage('fish')">🎣 Câu cá</button>
+    <button onclick="showPage('history')">📜 Lịch sử</button>
   </nav>
 
+  <main>
+    <div id="home" class="game-area">
+      <h2>Xin chào!</h2>
+      <p>Chào mừng đến web retro – nhập code quay thưởng, tung xúc xắc, câu cá và nhận quà.</p>
+      <p>Coin hiện có: <span id="coin">20</span></p>
+    </div>
+
+    <div id="spin" class="game-area hidden">
+      <h2>🎡 Vòng quay may mắn</h2>
+      <button onclick="spinWheel()">Quay (miễn phí)</button>
+      <p id="spin-result"></p>
+    </div>
+
+    <div id="dice" class="game-area hidden">
+      <h2>🎲 Tung xúc xắc (3 coin)</h2>
+      <canvas id="dice-canvas" width="100" height="100"></canvas>
+      <button onclick="rollDice()">Tung</button>
+      <p id="dice-result"></p>
+    </div>
+
+    <div id="fish" class="game-area hidden">
+      <h2>🎣 Câu cá (5 coin)</h2>
+      <canvas id="fish-canvas" width="200" height="100"></canvas>
+      <button onclick="goFish()">Câu cá</button>
+      <p id="fish-result"></p>
+    </div>
+
+    <div id="history" class="game-area hidden">
+      <h2>Lịch sử</h2>
+      <ul id="history-list"></ul>
+    </div>
+  </main>
+
+  <audio id="sound-ting" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"></audio>
+  <audio id="sound-dice" src="https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg"></audio>
+  <audio id="sound-fish" src="https://actions.google.com/sounds/v1/water/water_splash.ogg"></audio>
+
   <script>
-    let coin = localStorage.getItem('coin') ? parseInt(localStorage.getItem('coin')) : 0;
-    let history = JSON.parse(localStorage.getItem('history') || "[]");
-    let users = JSON.parse(localStorage.getItem('users') || "{}");
-    let currentUser = localStorage.getItem('currentUser') || null;
-    const codes = {"PhongCard1":5000,"PhongCard2":3000,"PhongCard3":1000};
+    let coin = 20;
+    let history = [];
 
-    function updateUI(){
-      document.getElementById("coinDisplay").innerText = coin;
-      localStorage.setItem('coin', coin);
-      localStorage.setItem('history', JSON.stringify(history));
-      renderHistory();
-      if(currentUser){
-        document.getElementById("authForms").classList.add("hidden");
-        document.getElementById("userPanel").classList.remove("hidden");
-        document.getElementById("userInfo").innerText = "Xin chào, "+currentUser;
-        document.getElementById("welcome").innerText = "👤 "+currentUser;
-      } else {
-        document.getElementById("authForms").classList.remove("hidden");
-        document.getElementById("userPanel").classList.add("hidden");
-        document.getElementById("welcome").innerText = "Chào mừng!";
+    function updateCoin() {
+      document.getElementById("coin").textContent = coin;
+    }
+
+    function showPage(id) {
+      document.querySelectorAll("main > div").forEach(el => el.classList.add("hidden"));
+      document.getElementById(id).classList.remove("hidden");
+    }
+
+    function addHistory(text, story=null) {
+      let li = document.createElement("li");
+      li.textContent = text;
+      if (story) {
+        let btn = document.createElement("button");
+        btn.textContent = "Chi tiết";
+        btn.onclick = () => {
+          let div = document.createElement("div");
+          div.className = "story-detail";
+          div.textContent = story;
+          li.appendChild(div);
+          btn.remove();
+        };
+        li.appendChild(btn);
       }
+      document.getElementById("history-list").appendChild(li);
     }
 
-    function renderHistory(){
-      let html="";
-      history.slice().reverse().forEach(item=>{
-        html += `<div class="history-item">${item}</div>`;
-      });
-      document.getElementById("historyList").innerHTML=html;
-    }
-
-    function showTab(tab){
-      document.querySelectorAll(".content").forEach(c=>c.classList.add("hidden"));
-      document.getElementById(tab).classList.remove("hidden");
-    }
-
-    function redeemCode(){
-      let code=document.getElementById("giftInput").value.trim();
-      if(codes[code]){
-        coin+=codes[code];
-        history.push(`Nhận ${codes[code]} coin từ code ${code}`);
-        document.getElementById("giftMsg").innerText="✅ Nhận "+codes[code]+" coin!";
-        delete codes[code];
-      } else {
-        document.getElementById("giftMsg").innerText="❌ Code không hợp lệ!";
+    // Vòng quay
+    function spinWheel() {
+      let rnd = Math.random();
+      let result;
+      if (rnd < 0.1) { coin += 7; result="Bạn trúng 7 coin!"; }
+      else if (rnd < 0.3) { coin += 5; result="Bạn trúng 5 coin!"; }
+      else if (rnd < 0.7) { coin += 3; result="Bạn trúng 3 coin!"; }
+      else { 
+        let story="Ngày xưa có 1 chú mèo retro thích code web...";
+        addHistory("Bạn trúng 1 câu chuyện", story);
+        result="Bạn nhận 1 câu chuyện!";
+        document.getElementById("spin-result").textContent = result;
+        updateCoin();
+        document.getElementById("sound-ting").play();
+        return;
       }
-      updateUI();
+      document.getElementById("spin-result").textContent = result;
+      updateCoin();
+      addHistory(result);
+      document.getElementById("sound-ting").play();
     }
 
-    function spinWheel(){
-      let r=Math.random()*100, result="";
-      if(r<10){ coin+=7000; result="Bạn nhận 7000 coin!"; }
-      else if(r<30){ coin+=5000; result="Bạn nhận 5000 coin!"; }
-      else if(r<70){ let v=[2000,3000,4000][Math.floor(Math.random()*3)]; coin+=v; result="Bạn nhận "+v+" coin!"; }
-      else { result="Bạn nhận 1 câu chuyện: 'Ngày xửa ngày xưa...'"; }
-      history.push(result);
-      document.getElementById("spinResult").innerText=result;
-      updateUI();
+    // Xúc xắc
+    function rollDice() {
+      if (coin < 3) { alert("Không đủ coin!"); return; }
+      coin -= 3; updateCoin();
+      let ctx = document.getElementById("dice-canvas").getContext("2d");
+      let face = Math.floor(Math.random() * 6) + 1;
+      ctx.fillStyle="#000"; ctx.fillRect(0,0,100,100);
+      ctx.fillStyle="#fff";
+      ctx.font="30px Arial";
+      ctx.fillText(face,40,60);
+      let result="Xúc xắc ra số " + face;
+      document.getElementById("dice-result").textContent = result;
+      addHistory(result);
+      document.getElementById("sound-dice").play();
     }
 
-    function rollDice(){
-      let d1=Math.ceil(Math.random()*6), d2=Math.ceil(Math.random()*6);
-      let reward=(d1==d2)?500:100;
-      coin+=reward;
-      let msg=`🎲 Bạn tung ra ${d1} và ${d2} → +${reward} coin`;
-      history.push(msg);
-      document.getElementById("earnMsg").innerText=msg;
-      updateUI();
+    // Câu cá
+    function goFish() {
+      if (coin < 5) { alert("Không đủ coin!"); return; }
+      coin -= 5; updateCoin();
+      let ctx = document.getElementById("fish-canvas").getContext("2d");
+      ctx.fillStyle="#000"; ctx.fillRect(0,0,200,100);
+      ctx.fillStyle="#0af"; ctx.fillRect(0,50,200,50);
+      ctx.fillStyle="#ff0"; ctx.fillRect(90,40,20,10); // cá pixel
+      setTimeout(()=>{
+        let rnd = Math.random();
+        let result;
+        if (rnd < 0.3) { coin+=10; result="Bạn câu được cá to (+10 coin)!"; }
+        else if (rnd < 0.6) { coin+=5; result="Bạn câu được cá nhỏ (+5 coin)!"; }
+        else if (rnd < 0.8) { result="Bạn câu trúng... cái dép!"; }
+        else { 
+          let story="Một hôm, khi thả câu, bạn kéo lên một quyển sách bí ẩn...";
+          addHistory("Bạn câu được 1 câu chuyện", story);
+          result="Bạn nhận 1 câu chuyện!";
+          document.getElementById("fish-result").textContent = result;
+          updateCoin();
+          document.getElementById("sound-fish").play();
+          return;
+        }
+        document.getElementById("fish-result").textContent = result;
+        updateCoin();
+        addHistory(result);
+        document.getElementById("sound-fish").play();
+      }, 1500);
     }
 
-    function goFishing(){
-      let r=Math.random()*100, result="", reward=0;
-      if(r<50){ result="🐟 Cá nhỏ +100"; reward=100; }
-      else if(r<80){ result="🐠 Cá to +500"; reward=500; }
-      else if(r<95){ result="🪣 Rác +0"; reward=0; }
-      else { result="🐉 Cá hiếm +2000"; reward=2000; }
-      coin+=reward;
-      history.push("🎣 "+result);
-      document.getElementById("earnMsg").innerText=result;
-      updateUI();
-    }
-
-    function register(){
-      let u=document.getElementById("username").value, p=document.getElementById("password").value;
-      if(users[u]){ alert("Tên đã tồn tại!"); return; }
-      users[u]=p; localStorage.setItem('users',JSON.stringify(users));
-      alert("Đăng ký thành công!");
-    }
-
-    function login(){
-      let u=document.getElementById("username").value, p=document.getElementById("password").value;
-      if(users[u]&&users[u]==p){ currentUser=u; localStorage.setItem('currentUser',u); updateUI(); }
-      else alert("Sai tài khoản hoặc mật khẩu!");
-    }
-
-    function logout(){
-      currentUser=null; localStorage.removeItem('currentUser'); updateUI();
-    }
-
-    updateUI();
+    updateCoin();
   </script>
 </body>
-  </html>
+</html>
