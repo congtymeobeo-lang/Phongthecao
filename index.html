@@ -1,425 +1,180 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>PhongCard — Sang trọng</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-<style>
-:root{
-  --bg:#060712;
-  --panel:#0f1720;
-  --muted:#9aa9bb;
-  --glass: rgba(255,255,255,0.03);
-  --accent1: #7dd3fc;
-  --accent2: #9b8cff;
-  --accent3: #60a5fa;
-  --good:#34d399;
-  --bad:#fb7185;
-  --card-shadow: 0 10px 30px rgba(2,6,23,0.6);
-}
-*{box-sizing:border-box}
-html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:#e6f7ff;background:linear-gradient(180deg,#041026 0%,var(--bg) 100%);}
-.app{max-width:980px;margin:8px auto;padding:8px;min-height:calc(100vh - 96px);display:grid;grid-template-columns:1fr 340px;gap:12px}
-@media(max-width:900px){ .app{grid-template-columns:1fr;padding:8px} .right{order:2} .left{order:1} }
-
-/* header */
-header{height:64px;display:flex;align-items:center;gap:12px;padding:8px 12px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);box-shadow:var(--card-shadow)}
-.logo{width:52px;height:44;border-radius:10px;background:linear-gradient(135deg,var(--accent1),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:800;color:#022}
-.brand{display:flex;flex-direction:column}
-.title{font-weight:700}
-.subtitle{font-size:12px;color:var(--muted)}
-
-.sp{flex:1}
-.top-actions{display:flex;gap:8px;align-items:center}
-
-/* card */
-.card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.03);box-shadow:var(--card-shadow)}
-h2{margin:0 0 8px 0}
-.small{font-size:13px;color:var(--muted)}
-.muted-note{color:var(--muted);font-size:13px}
-
-/* sections */
-.section{display:none;opacity:0;transform:translateY(8px);transition:all .28s ease}
-.section.active{display:block;opacity:1;transform:none}
-
-/* controls */
-input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
-.row{display:flex;gap:8px;align-items:center}
-.btn{padding:8px 12px;border-radius:10px;border:0;background:transparent;color:var(--muted);cursor:pointer}
-.btn:active{transform:scale(0.98)}
-.btn-primary{background:linear-gradient(90deg,var(--accent1),var(--accent3));color:#042;font-weight:700;padding:9px 12px;border-radius:10px;cursor:pointer;box-shadow:0 8px 26px rgba(96,165,250,0.07)}
-
-/* bottom nav */
-.bottom-nav{position:fixed;left:50%;transform:translateX(-50%);bottom:12px;width:min(960px,96%);display:flex;justify-content:space-between;background:linear-gradient(180deg,rgba(8,12,18,0.9),rgba(6,8,12,0.85));padding:8px;border-radius:14px;border:1px solid rgba(255,255,255,0.03);z-index:110}
-.nav-item{flex:1;text-align:center;padding:8px;border-radius:10px;color:var(--muted);cursor:pointer}
-.nav-item.active{background:linear-gradient(90deg,var(--accent2),var(--accent1));color:#022;font-weight:700}
-.nav-icon{font-size:18px;display:block}
-
-/* wheel */
-.wheel-wrap{display:flex;flex-direction:column;align-items:center;gap:10px}
-.wheel{width:300px;height:300px;border-radius:50%;overflow:hidden;border:12px solid rgba(255,255,255,0.03);position:relative;transition:transform 4s cubic-bezier(.2,.9,.2,1)}
-.pointer{width:0;height:0;border-left:20px solid transparent;border-right:20px solid transparent;border-bottom:34px solid var(--accent1);margin-top:-12px}
-.slice{position:absolute;width:50%;height:50%;left:50%;top:50%;transform-origin:0 0;display:flex;align-items:center;justify-content:center;font-weight:800}
-
-/* history */
-.history-list{max-height:420px;overflow:auto;padding:8px;border-radius:8px;background:rgba(0,0,0,0.05)}
-.history-item{padding:10px;border-radius:8px;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);margin-bottom:8px}
-
-/* mini games */
-.game-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-
-/* preview */
-.bg-preview{width:100%;height:120px;border-radius:8px;background-size:cover;background-position:center;border:1px solid rgba(255,255,255,0.03)}
-
-/* loader small */
-.loader-overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(2,6,23,0.5);z-index:300;opacity:0;pointer-events:none;transition:opacity .18s}
-.loader-overlay.show{opacity:1;pointer-events:auto}
-.loader-box{background:linear-gradient(90deg,var(--accent2),var(--accent1));padding:12px;border-radius:10px;color:#022;font-weight:800}
-
-/* ripple */
-.ripple{position:relative;overflow:hidden}
-.ripple:after{content:"";position:absolute;width:6px;height:6px;background:rgba(255,255,255,0.08);left:50%;top:50%;transform:translate(-50%,-50%);border-radius:50%;opacity:0;transition:all .5s}
-.ripple:active:after{width:260px;height:260px;opacity:1;transition:all .5s}
-
-/* responsive */
-@media(max-width:760px){
-  .app{grid-template-columns:1fr;padding:10px}
-  .wheel{width:260px;height:260px}
-  .bg-preview{height:90px}
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PhongCard</title>
+  <style>
+    body { margin:0; font-family:Arial, sans-serif; background:#121212; color:#fff; }
+    .hidden { display:none; }
+    header { text-align:center; padding:10px; background:#1f1f1f; font-size:18px; }
+    #coinDisplay { font-weight:bold; color:#ffd700; }
+    .content { padding:20px; }
+    nav { position:fixed; bottom:0; left:0; right:0; background:#1f1f1f; display:flex; justify-content:space-around; padding:10px 0; }
+    nav button { background:none; border:none; color:#fff; font-size:14px; flex:1; }
+    nav button.active { color:#ffd700; }
+    button.action { padding:10px 20px; background:#ffd700; border:none; border-radius:8px; font-weight:bold; margin:5px 0; }
+    .fade { animation:fadein 0.3s; }
+    @keyframes fadein { from{opacity:0} to{opacity:1} }
+    .history-item { border-bottom:1px solid #333; padding:5px 0; }
+  </style>
 </head>
 <body>
+  <header>
+    <span id="welcome">Chào mừng!</span> | 💰 <span id="coinDisplay">0</span>
+  </header>
 
-<header>
-  <div class="logo">P</div>
-  <div class="brand"><div class="title">PhongCard</div><div class="subtitle small">Sang trọng — Coin & Mini-game</div></div>
-  <div class="sp"></div>
-  <div class="top-actions">
-    <div id="coinBadge" class="small">0 Xu</div>
-    <button id="musicBtn" class="btn btn-primary">🎵 Nhạc</button>
-  </div>
-</header>
+  <div id="home" class="content fade">Đây là Dashboard 🐱</div>
 
-<div class="app">
-  <!-- LEFT main -->
-  <div class="left">
-    <!-- HOME -->
-    <section id="home" class="card section active">
-      <h2>Dashboard</h2>
-      <p class="small">Xin chào — Trang quản lý, coin & lượt quay, mini-game.</p>
-      <div style="display:flex;gap:12px;margin-top:12px;flex-wrap:wrap">
-        <div style="flex:1;min-width:140px" class="card">
-          <div class="small">Tài khoản</div>
-          <div id="uiUser" style="font-weight:800;margin-top:8px">Chưa đăng nhập</div>
-        </div>
-        <div style="flex:1;min-width:140px" class="card">
-          <div class="small">Coin</div>
-          <div id="uiCoin" style="font-weight:800;margin-top:8px">0 Xu</div>
-        </div>
-        <div style="flex:1;min-width:140px" class="card">
-          <div class="small">Lượt quay</div>
-          <div id="uiSpins" style="font-weight:800;margin-top:8px">0</div>
-        </div>
-      </div>
-
-      <div class="card" style="margin-top:12px">
-        <div class="small">Ảnh Dashboard (tùy chỉnh)</div>
-        <div id="homePreview" class="bg-preview" style="margin-top:8px"></div>
-        <div class="muted-note" style="margin-top:8px">Upload ảnh trong tab Tài khoản → lưu local.</div>
-      </div>
-    </section>
-
-    <!-- Giftcode -->
-    <section id="giftcode" class="card section">
-      <h2>Nhập Giftcode</h2>
-      <p class="small">PHONGCARDxxx = +1 lượt, PHONGVIPxxx = +2 lượt & VIP, PHONGGIFTxxx = coin.</p>
-      <div class="row" style="margin-top:8px">
-        <input id="codeField" placeholder="Nhập code...">
-        <button id="applyCode" class="btn-primary ripple">Áp dụng</button>
-      </div>
-      <div id="codeMsg" class="small" style="margin-top:8px"></div>
-
-      <div class="card" style="margin-top:12px">
-        <div class="small">Ảnh trang Giftcode</div>
-        <div id="redeemPreview" class="bg-preview" style="margin-top:8px"></div>
-      </div>
-    </section>
-
-    <!-- Wheel -->
-    <section id="wheel" class="card section">
-      <h2>Vòng quay</h2>
-      <p class="small">Tỉ lệ: 10% → 7k, 20% → 5k, 40% → 2/3/4k, 30% → câu chuyện</p>
-      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:12px">
-        <div style="flex:1;min-width:260px" class="card">
-          <div class="wheel-wrap">
-            <div class="pointer"></div>
-            <div id="wheelEl" class="wheel" aria-hidden="true"></div>
-            <div style="display:flex;gap:8px;align-items:center;margin-top:10px">
-              <button id="spinBtn" class="btn-primary ripple">Quay ngay</button>
-              <div id="spinInfo" class="small"></div>
-            </div>
-            <div id="spinResult" class="small" style="margin-top:8px"></div>
-          </div>
-        </div>
-        <div style="width:300px">
-          <div class="card">
-            <div class="small">VIP</div>
-            <div id="vipInfo" class="muted-note" style="margin-top:8px"></div>
-          </div>
-          <div class="card" style="margin-top:12px">
-            <div class="small">Ảnh vòng quay</div>
-            <div id="wheelPreview" class="bg-preview" style="margin-top:8px"></div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- History -->
-    <section id="history" class="card section">
-      <h2>Lịch sử</h2>
-      <p class="small">Các phần thưởng đã nhận theo tài khoản.</p>
-      <div id="historyList" class="history-list" style="margin-top:10px">Chưa có lịch sử</div>
-    </section>
-
-    <!-- Earn / Mini-games -->
-    <section id="earn" class="card section">
-      <h2>Kiếm tiền — Mini-game</h2>
-      <p class="small">Tung xúc xắc & Câu cá — kiếm Xu nhanh.</p>
-
-      <div class="card" style="margin-top:10px">
-        <h3>Tung xúc xắc</h3>
-        <div style="display:flex;gap:10px;align-items:center;margin-top:8px">
-          <div id="dieA" style="font-size:44px">⚀</div>
-          <div id="dieB" style="font-size:44px">⚀</div>
-        </div>
-        <div style="display:flex;gap:8px;margin-top:10px">
-          <button id="roll" class="btn-primary ripple">Tung</button>
-          <div id="rollMsg" class="small" style="align-self:center"></div>
-        </div>
-      </div>
-
-      <div class="card" style="margin-top:12px">
-        <h3>Câu cá</h3>
-        <div style="display:flex;gap:8px;margin-top:8px">
-          <button id="fish" class="btn-primary ripple">Câu</button>
-          <div id="fishMsg" class="small" style="align-self:center"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Account -->
-    <section id="account" class="card section">
-      <h2>Tài khoản</h2>
-      <div id="accountBox">
-        <div class="small">Bạn chưa đăng nhập</div>
-        <div style="margin-top:10px"><button id="openAuth" class="btn-primary ripple">Đăng nhập / Đăng ký</button></div>
-      </div>
-
-      <div class="card" style="margin-top:12px">
-        <div class="small">Upload ảnh cho trang (lưu local)</div>
-        <div style="display:flex;gap:8px;margin-top:8px">
-          <input id="upHome" type="file" accept="image/*">
-          <input id="upRedeem" type="file" accept="image/*">
-          <input id="upWheel" type="file" accept="image/*">
-        </div>
-        <div class="muted-note" style="margin-top:8px">Ảnh lưu trong trình duyệt, chỉ hiển thị trên thiết bị này.</div>
-      </div>
-    </section>
-
+  <div id="giftcode" class="content hidden fade">
+    <h2>Nhập Giftcode</h2>
+    <input id="giftInput" placeholder="Nhập code...">
+    <button class="action" onclick="redeemCode()">Nhận thưởng</button>
+    <p id="giftMsg"></p>
   </div>
 
-  <!-- RIGHT quick -->
-  <aside class="right card right">
-    <div class="card">
-      <div class="small">Nhạc nền (LoFi)</div>
-      <div style="display:flex;gap:8px;margin-top:8px">
-        <button id="playMusic" class="btn-primary ripple">Bật</button>
-        <button id="pauseMusic" class="btn ripple">Tắt</button>
-      </div>
+  <div id="spin" class="content hidden fade">
+    <h2>Quay thưởng 🎡</h2>
+    <button class="action" onclick="spinWheel()">Quay</button>
+    <p id="spinResult"></p>
+  </div>
+
+  <div id="history" class="content hidden fade">
+    <h2>Lịch sử</h2>
+    <div id="historyList"></div>
+  </div>
+
+  <div id="earn" class="content hidden fade">
+    <h2>Kiếm tiền 💰</h2>
+    <button class="action" onclick="rollDice()">🎲 Tung xúc xắc</button>
+    <button class="action" onclick="goFishing()">🎣 Câu cá</button>
+    <p id="earnMsg"></p>
+  </div>
+
+  <div id="account" class="content hidden fade">
+    <h2>Tài khoản</h2>
+    <div id="authForms">
+      <input id="username" placeholder="Tên tài khoản"><br>
+      <input id="password" type="password" placeholder="Mật khẩu"><br>
+      <button class="action" onclick="register()">Đăng ký</button>
+      <button class="action" onclick="login()">Đăng nhập</button>
     </div>
-
-    <div class="card" style="margin-top:12px">
-      <div class="small">Gõ code nhanh</div>
-      <div style="display:flex;gap:8px;margin-top:8px">
-        <input id="sideCode" placeholder="CODE">
-        <button id="sideBtn" class="btn-primary ripple">OK</button>
-      </div>
-      <div id="sideMsg" class="small" style="margin-top:8px"></div>
+    <div id="userPanel" class="hidden">
+      <p id="userInfo"></p>
+      <button class="action" onclick="logout()">Đăng xuất</button>
     </div>
+  </div>
 
-    <div class="card" style="margin-top:12px">
-      <div class="small">Mini lịch sử</div>
-      <div id="mini" class="history-list small" style="margin-top:8px">Chưa có</div>
-    </div>
-  </aside>
-</div>
+  <nav>
+    <button onclick="showTab('home')">🏠 Home</button>
+    <button onclick="showTab('giftcode')">🎁 Code</button>
+    <button onclick="showTab('spin')">🎡 Quay</button>
+    <button onclick="showTab('history')">📜 Lịch sử</button>
+    <button onclick="showTab('earn')">💰 Kiếm</button>
+    <button onclick="showTab('account')">👤 TK</button>
+  </nav>
 
-<!-- bottom nav -->
-<div class="bottom-nav" id="nav">
-  <div class="nav-item active" data-target="home"><div class="nav-icon">🏠</div><div class="small">Home</div></div>
-  <div class="nav-item" data-target="giftcode"><div class="nav-icon">🎁</div><div class="small">Giftcode</div></div>
-  <div class="nav-item" data-target="wheel"><div class="nav-icon">🎡</div><div class="small">Quay</div></div>
-  <div class="nav-item" data-target="history"><div class="nav-icon">📜</div><div class="small">Lịch sử</div></div>
-  <div class="nav-item" data-target="earn"><div class="nav-icon">💰</div><div class="small">Kiếm</div></div>
-  <div class="nav-item" data-target="account" id="navAccount"><div class="nav-icon">👤</div><div class="small">Tài khoản</div></div>
-</div>
+  <script>
+    let coin = localStorage.getItem('coin') ? parseInt(localStorage.getItem('coin')) : 0;
+    let history = JSON.parse(localStorage.getItem('history') || "[]");
+    let users = JSON.parse(localStorage.getItem('users') || "{}");
+    let currentUser = localStorage.getItem('currentUser') || null;
+    const codes = {"PhongCard1":5000,"PhongCard2":3000,"PhongCard3":1000};
 
-<!-- loader -->
-<div id="loader" class="loader-overlay"><div class="loader-box">Đang tải...</div></div>
+    function updateUI(){
+      document.getElementById("coinDisplay").innerText = coin;
+      localStorage.setItem('coin', coin);
+      localStorage.setItem('history', JSON.stringify(history));
+      renderHistory();
+      if(currentUser){
+        document.getElementById("authForms").classList.add("hidden");
+        document.getElementById("userPanel").classList.remove("hidden");
+        document.getElementById("userInfo").innerText = "Xin chào, "+currentUser;
+        document.getElementById("welcome").innerText = "👤 "+currentUser;
+      } else {
+        document.getElementById("authForms").classList.remove("hidden");
+        document.getElementById("userPanel").classList.add("hidden");
+        document.getElementById("welcome").innerText = "Chào mừng!";
+      }
+    }
 
-<!-- audio (LoFi free) -->
-<audio id="bg" loop>
-  <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_7b65e8c3f2.mp3?filename=lofi-chill-11293.mp3" type="audio/mpeg">
-</audio>
+    function renderHistory(){
+      let html="";
+      history.slice().reverse().forEach(item=>{
+        html += `<div class="history-item">${item}</div>`;
+      });
+      document.getElementById("historyList").innerHTML=html;
+    }
 
-<!-- modal root -->
-<div id="modalRoot"></div>
+    function showTab(tab){
+      document.querySelectorAll(".content").forEach(c=>c.classList.add("hidden"));
+      document.getElementById(tab).classList.remove("hidden");
+    }
 
-<script>
-/* ---------- Data model ---------- */
-const STORAGE = 'phongcard_msu_v1';
-let DB = JSON.parse(localStorage.getItem(STORAGE) || '{}');
-if (!DB.users) DB.users = {};
-if (!DB.usedCodes) DB.usedCodes = [];
-if (!DB.images) DB.images = {}; // home/redeem/wheel
-if (!DB._seeded) {
-  for (let i=1;i<=30;i++){ DB['PHONGCARD' + String(i).padStart(3,'0')] = {type:'card'}; }
-  DB['PHONGVIP001']={type:'vip'}; DB['PHONGGIFT001']={type:'gift'};
-  DB._seeded=true; localStorage.setItem(STORAGE, JSON.stringify(DB));
-}
-function save(){ localStorage.setItem(STORAGE, JSON.stringify(DB)); }
+    function redeemCode(){
+      let code=document.getElementById("giftInput").value.trim();
+      if(codes[code]){
+        coin+=codes[code];
+        history.push(`Nhận ${codes[code]} coin từ code ${code}`);
+        document.getElementById("giftMsg").innerText="✅ Nhận "+codes[code]+" coin!";
+        delete codes[code];
+      } else {
+        document.getElementById("giftMsg").innerText="❌ Code không hợp lệ!";
+      }
+      updateUI();
+    }
 
-/* ---------- Session ---------- */
-let current = localStorage.getItem(STORAGE + '_session') || null;
-if (current && !DB.users[current]) { current = null; localStorage.removeItem(STORAGE + '_session'); }
+    function spinWheel(){
+      let r=Math.random()*100, result="";
+      if(r<10){ coin+=7000; result="Bạn nhận 7000 coin!"; }
+      else if(r<30){ coin+=5000; result="Bạn nhận 5000 coin!"; }
+      else if(r<70){ let v=[2000,3000,4000][Math.floor(Math.random()*3)]; coin+=v; result="Bạn nhận "+v+" coin!"; }
+      else { result="Bạn nhận 1 câu chuyện: 'Ngày xửa ngày xưa...'"; }
+      history.push(result);
+      document.getElementById("spinResult").innerText=result;
+      updateUI();
+    }
 
-/* ---------- UI refs ---------- */
-const sections = document.querySelectorAll('.section');
-const navItems = document.querySelectorAll('.nav-item');
-const loader = document.getElementById('loader');
+    function rollDice(){
+      let d1=Math.ceil(Math.random()*6), d2=Math.ceil(Math.random()*6);
+      let reward=(d1==d2)?500:100;
+      coin+=reward;
+      let msg=`🎲 Bạn tung ra ${d1} và ${d2} → +${reward} coin`;
+      history.push(msg);
+      document.getElementById("earnMsg").innerText=msg;
+      updateUI();
+    }
 
-const uiUser = document.getElementById('uiUser');
-const uiCoin = document.getElementById('uiCoin');
-const uiSpins = document.getElementById('uiSpins');
-const coinBadge = document.getElementById('coinBadge');
+    function goFishing(){
+      let r=Math.random()*100, result="", reward=0;
+      if(r<50){ result="🐟 Cá nhỏ +100"; reward=100; }
+      else if(r<80){ result="🐠 Cá to +500"; reward=500; }
+      else if(r<95){ result="🪣 Rác +0"; reward=0; }
+      else { result="🐉 Cá hiếm +2000"; reward=2000; }
+      coin+=reward;
+      history.push("🎣 "+result);
+      document.getElementById("earnMsg").innerText=result;
+      updateUI();
+    }
 
-const codeField = document.getElementById('codeField');
-const applyCode = document.getElementById('applyCode');
-const codeMsg = document.getElementById('codeMsg');
+    function register(){
+      let u=document.getElementById("username").value, p=document.getElementById("password").value;
+      if(users[u]){ alert("Tên đã tồn tại!"); return; }
+      users[u]=p; localStorage.setItem('users',JSON.stringify(users));
+      alert("Đăng ký thành công!");
+    }
 
-const sideCode = document.getElementById('sideCode');
-const sideBtn = document.getElementById('sideBtn');
-const sideMsg = document.getElementById('sideMsg');
+    function login(){
+      let u=document.getElementById("username").value, p=document.getElementById("password").value;
+      if(users[u]&&users[u]==p){ currentUser=u; localStorage.setItem('currentUser',u); updateUI(); }
+      else alert("Sai tài khoản hoặc mật khẩu!");
+    }
 
-const historyList = document.getElementById('historyList');
-const mini = document.getElementById('mini');
+    function logout(){
+      currentUser=null; localStorage.removeItem('currentUser'); updateUI();
+    }
 
-const dieA = document.getElementById('dieA');
-const dieB = document.getElementById('dieB');
-const rollBtn = document.getElementById('roll');
-const rollMsg = document.getElementById('rollMsg');
-
-const fishBtn = document.getElementById('fish');
-const fishMsg = document.getElementById('fishMsg');
-
-const wheelEl = document.getElementById('wheelEl');
-const spinBtn = document.getElementById('spinBtn');
-const spinResult = document.getElementById('spinResult');
-
-const openAuth = document.getElementById('openAuth');
-const accountBox = document.getElementById('accountBox');
-
-const upHome = document.getElementById('upHome');
-const upRedeem = document.getElementById('upRedeem');
-const upWheel = document.getElementById('upWheel');
-const homePreview = document.getElementById('homePreview');
-const redeemPreview = document.getElementById('redeemPreview');
-const wheelPreview = document.getElementById('wheelPreview');
-
-const playMusic = document.getElementById('playMusic');
-const pauseMusic = document.getElementById('pauseMusic');
-const bg = document.getElementById('bg');
-const musicBtn = document.getElementById('musicBtn');
-
-/* ---------- Navigation ---------- */
-navItems.forEach(it=> it.addEventListener('click', ()=> {
-  navItems.forEach(n=> n.classList.remove('active'));
-  it.classList.add('active');
-  const tgt = it.dataset.target;
-  navigateTo(tgt);
-}));
-
-function showLoader(ms=250){
-  loader.classList.add('show'); loader.style.display='flex';
-  setTimeout(()=> { loader.classList.remove('show'); loader.style.display='none'; }, ms);
-}
-function navigateTo(id){
-  showLoader(250);
-  sections.forEach(s=> s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  // focus for convenience
-  if (id === 'giftcode') setTimeout(()=> codeField.focus(), 120);
-  if (id === 'wheel') renderWheel();
-  renderAll();
-}
-
-/* ---------- Auth modal ---------- */
-document.getElementById('openAuth').addEventListener('click', openAuthModal);
-function openAuthModal(){
-  const root = document.getElementById('modalRoot');
-  const m = document.createElement('div'); m.className='card modal-back'; m.style.background='rgba(0,0,0,0.45);position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:400';
-  m.innerHTML = `<div class="card" style="width:94%;max-width:420px">
-    <h3>Đăng nhập / Đăng ký</h3>
-    <input id="inUser" placeholder="Tên tài khoản (không dấu)" />
-    <input id="inPass" placeholder="Mật khẩu" type="password" style="margin-top:8px" />
-    <div style="display:flex;gap:8px;margin-top:12px">
-      <button id="doLogin" class="btn-primary">Đăng nhập</button>
-      <button id="doReg" class="btn">Đăng ký</button>
-      <button id="doClose" class="btn">Đóng</button>
-    </div>
-    <div class="muted-note" style="margin-top:8px">Dữ liệu lưu cục bộ trên trình duyệt (local).</div>
-  </div>`;
-  root.appendChild(m);
-  document.getElementById('doClose').onclick = ()=> m.remove();
-  document.getElementById('doReg').onclick = ()=> {
-    const u = (document.getElementById('inUser').value||'').trim();
-    const p = (document.getElementById('inPass').value||'').trim();
-    if (!u||!p) return alert('Nhập tên & mật khẩu!');
-    if (DB.users[u]) return alert('Tài khoản đã tồn tại!');
-    DB.users[u] = { pass:p, coin:0, spins:0, vipBoost:false, history:[] };
-    save();
-    current = u; localStorage.setItem(STORAGE + '_session', current);
-    m.remove(); toast('Đăng ký & đăng nhập: '+u); renderAll(); navigateTo('home');
-  };
-  document.getElementById('doLogin').onclick = ()=> {
-    const u = (document.getElementById('inUser').value||'').trim();
-    const p = (document.getElementById('inPass').value||'').trim();
-    if (!DB.users[u] || DB.users[u].pass !== p) return alert('Sai tài khoản hoặc mật khẩu!');
-    current = u; localStorage.setItem(STORAGE + '_session', current);
-    m.remove(); toast('Đăng nhập: '+u); renderAll(); navigateTo('home');
-  };
-}
-
-/* ---------- Giftcode ---------- */
-applyCode.addEventListener('click', ()=> handleRedeem(codeField.value));
-sideBtn.addEventListener('click', ()=> handleRedeem(sideCode.value));
-function normalize(s){ return (s||'').trim().toUpperCase(); }
-function handleRedeem(raw){
-  const code = normalize(raw);
-  if (!current) { showTemp(codeMsg, 'Đăng nhập để dùng code', true); return; }
-  if (!code) { showTemp(codeMsg, 'Nhập code đi', true); return; }
-  if (DB.usedCodes.includes(code)) { showTemp(codeMsg, 'Code đã dùng', true); return; }
-  if (DB[code] && DB[code].type === 'card') {
-    DB.usedCodes.push(code); DB.users[current].spins = (DB.users[current].spins||0) + 1; save(); renderAll();
-    showTemp(codeMsg, 'Nhận +1 lượt quay 🎉'); codeField.value=''; sideCode.value=''; return;
-  }
-  if (/^PHONGVIP\d{1,6}$/.test(code) || (DB[code] && DB[code].type==='vip')) {
-    DB.usedCodes.push(code); DB.users[current].spins = (DB.users[current].spins||0) + 2; DB.users[current].vipBoost = true; save(); renderAll(); showTemp(codeMsg, 'PHONGVIP: +2 lượt & VIP'); codeField.value=''; sideCode.value=''; return;
-  }
-  if (/^PHONGGIFT\d{1,6}$/.test(code) || (DB[code] && DB[code].type==='gift')) {
-    DB.usedCodes.push(code); const vals=[2000,3000,4000,5000,7000]; const money=vals[Math.floor(Math.random()*vals.length)];
-    DB.users[current].coin = (DB.users[current].coin||0) + money; DB.users[current].history = DB.users[current].history || [];
-    DB.users[current].history.unshift({prize:`${money.toLocaleString()} Xu (GIFT)`, time:new Date().toLocaleString(), value:money});
-    save(); renderAll(); renderHistory(); showTemp(codeMsg, `Bạn nhận ${money.toLocaleString()} Xu`);
+    updateUI();
+  </script>
+</body>
+  </html>
