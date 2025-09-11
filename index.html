@@ -3,92 +3,74 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PhongCard Mini Game Nâng Cao</title>
+<title>PhongCard Mini Game Xịn</title>
 <style>
-/* ===== Reset & Body ===== */
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:Arial,sans-serif;background:#f0f0f0;color:#333;transition:0.3s;}
 body.dark{background:#121212;color:#eee;}
-a{text-decoration:none;color:inherit;}
 button{cursor:pointer;}
-
-/* ===== Header ===== */
 header{padding:15px;text-align:center;font-size:1.7em;font-weight:bold;}
-
-/* ===== Tabs ===== */
 .tab{display:none;padding:15px;padding-bottom:80px;min-height:80vh;animation:fadeIn 0.5s;}
 .tab.active{display:block;}
 h2{margin-bottom:10px;}
-
-/* ===== Menu ===== */
 nav{position:fixed;bottom:0;left:0;width:100%;display:flex;justify-content:space-around;background:#fff;border-top:1px solid #ccc;transition:0.3s;}
 body.dark nav{background:#1e1e1e;border-top:1px solid #444;}
 nav button{flex:1;padding:12px;font-size:1em;border:none;background:none;transition:0.3s;}
 nav button.active{background:#ddd;}
 body.dark nav button.active{background:#333;}
-
-/* ===== Buttons ===== */
 button.action{padding:10px 20px;margin:5px 0;border:none;background:#2196F3;color:#fff;border-radius:5px;transition:0.2s;}
 button.action:hover{transform:scale(1.05);}
 body.dark button.action{background:#0b79d0;}
-
-/* ===== Inputs ===== */
 input[type=text], input[type=password], input[type=number]{padding:10px;width:100%;margin:5px 0;border-radius:5px;border:1px solid #ccc;}
 body.dark input[type=text], body.dark input[type=password], body.dark input[type=number]{background:#222;color:#eee;border:1px solid #555;}
-
-/* ===== History Table ===== */
 table{width:100%;border-collapse:collapse;margin-top:10px;}
 th, td{border:1px solid #ccc;padding:5px;text-align:center;}
 body.dark table, body.dark th, body.dark td{border:1px solid #555;}
-
-/* ===== Animations ===== */
 @keyframes fadeIn{from{opacity:0;} to{opacity:1;}}
 .fade-in{animation:fadeIn 0.5s;}
-
-/* ===== Overlay ===== */
 #overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);color:#fff;display:none;align-items:center;justify-content:center;z-index:9999;flex-direction:column;text-align:center;padding:20px;}
 #overlay button{margin-top:20px;}
-.pixel{font-family:monospace;white-space:pre;font-size:12px;}
 .progress-bar{width:100%;background:#ccc;height:10px;border-radius:5px;margin:10px 0;}
 .progress-fill{height:10px;width:0%;background:#2196F3;border-radius:5px;transition:0.2s;}
+#fish-area{position:relative;height:50px;background:#dff;border-radius:10px;margin:10px 0;overflow:hidden;}
+#fish{position:absolute;width:40px;height:30px;background:orange;border-radius:50%;top:10px;left:0;}
+#word-game input{width:60%;display:inline-block;}
+#word-game button{display:inline-block;}
 </style>
 </head>
 <body>
-
-<header>PhongCard Mini Game Nâng Cao</header>
+<header>PhongCard Mini Game Xịn</header>
 
 <!-- ===== Tabs ===== -->
 <div id="home" class="tab active">
   <h2>Trang chủ</h2>
   <p>Xin chào, <span id="user-name">Khách</span>!</p>
-  <p>Coin: <span id="coin">0</span> | Pcoin: <span id="pcoin">0</span> | Lượt quay: <span id="spin-count">0</span></p>
+  <p>Coin: <span id="coin">0</span> | Pcoin: <span id="pcoin">0</span></p>
   <button class="action" id="toggle-dark">Dark/Light Mode</button>
 </div>
 
-<div id="spin" class="tab">
-  <h2>Vòng quay</h2>
-  <p>1 lượt = 1 lượt quay</p>
-  <button class="action" id="spin-btn">Quay</button>
-  <p id="spin-result"></p>
-  <pre id="spin-animation" class="pixel"></pre>
-</div>
-
-<div id="code" class="tab">
-  <h2>Giftcode</h2>
-  <input type="text" id="giftcode" placeholder="Nhập giftcode">
-  <button class="action" id="redeem-btn">Nhận</button>
-  <p id="gift-result"></p>
-</div>
-
 <div id="games" class="tab">
-  <h2>Kiếm tiền</h2>
-  <p>Câu cá (5 Pcoin), Tung xúc xắc (3 Pcoin), Kéo bò (15 Pcoin)</p>
-  <button class="action" id="fish-btn">Câu cá</button>
-  <div class="progress-bar"><div id="fish-bar" class="progress-fill"></div></div>
-  <button class="action" id="dice-btn">Tung xúc xắc</button><br>
-  <button class="action" id="cow-btn">Kéo bò</button><br>
-  <p id="game-result"></p>
-  <pre id="game-animation" class="pixel"></pre>
+  <h2>Game kiếm tiền</h2>
+  <p>Câu cá (5 Pcoin), Kéo bò (15 Pcoin), Nối từ (60 Pcoin)</p>
+  
+  <h3>Câu cá</h3>
+  <div id="fish-area"><div id="fish"></div></div>
+  <button class="action" id="fish-jump">Giật cá!</button>
+  <p id="fish-result"></p>
+  
+  <h3>Kéo bò</h3>
+  <button class="action" id="cow-btn">Bắt đầu kéo bò</button>
+  <p id="cow-result"></p>
+  
+  <h3>Nối từ</h3>
+  <div id="word-game">
+    <p>Phí chơi: 60 Pcoin, 40 lần nối = +20 Pcoin</p>
+    <div>Hệ thống sẽ nối lại sau mỗi lần</div>
+    <input type="text" id="word-input" placeholder="Nhập từ tiếp theo">
+    <button class="action" id="word-submit">Gửi</button>
+    <p id="word-result"></p>
+    <p>Số lần nối: <span id="word-count">0</span></p>
+  </div>
 </div>
 
 <div id="account" class="tab">
@@ -106,27 +88,18 @@ body.dark table, body.dark th, body.dark td{border:1px solid #555;}
     <button class="action" id="logout-btn">Đăng xuất</button>
     <h3>Lịch sử</h3>
     <table id="history-table"><tr><th>Thời gian</th><th>Sự kiện</th><th>Coin/Pcoin</th></tr></table>
-    <h3>Đổi Pcoin sang VNĐ</h3>
-    <input type="number" id="exchange-amount" placeholder="Số Pcoin muốn đổi">
-    <button class="action" id="exchange-btn">Đổi</button>
-    <p id="exchange-result"></p>
   </div>
 </div>
 
 <!-- ===== Menu ===== -->
 <nav>
   <button class="active" data-tab="home">Trang chủ</button>
-  <button data-tab="spin">Vòng quay</button>
-  <button data-tab="code">Code</button>
-  <button data-tab="games">Kiếm tiền</button>
+  <button data-tab="games">Game</button>
   <button data-tab="account">Tài khoản</button>
 </nav>
 
 <!-- ===== Overlay ===== -->
 <div id="overlay"><p id="overlay-text"></p><button class="action" id="overlay-btn">Đóng</button></div>
-
-<!-- ===== Audio ===== -->
-<audio id="ting-sound" src="https://freesound.org/data/previews/320/320181_5260877-lq.mp3"></audio>
 
 <script>
 // ===== LocalStorage =====
@@ -158,7 +131,6 @@ function updateDash(){
     document.getElementById('user-name').innerText=currentUser;
     document.getElementById('coin').innerText=users[currentUser].coin;
     document.getElementById('pcoin').innerText=users[currentUser].pcoin || 0;
-    document.getElementById('spin-count').innerText=users[currentUser].spinCount || 0;
     updateHistoryTable();
   } else {
     document.getElementById('auth-section').style.display='block';
@@ -172,7 +144,7 @@ document.getElementById('register-btn').addEventListener('click', ()=>{
   const p=document.getElementById('reg-pass').value.trim();
   if(!u||!p){alert('Nhập đầy đủ');return;}
   if(users[u]){alert('Tài khoản đã tồn tại'); return;}
-  users[u]={coin:0,pcoin:0,history:[],spinCount:0,password:p};
+  users[u]={coin:0,pcoin:0,history:[],password:p};
   localStorage.setItem('users', JSON.stringify(users));
   alert('Đăng ký thành công!');
 });
@@ -211,137 +183,88 @@ function updateHistoryTable(){
   });
   document.getElementById('coin').innerText=users[currentUser].coin;
   document.getElementById('pcoin').innerText=users[currentUser].pcoin;
-  document.getElementById('spin-count').innerText=users[currentUser].spinCount;
 }
 
-// ===== Giftcode + Admin =====
-document.getElementById('redeem-btn').addEventListener('click', ()=>{
-  const code=document.getElementById('giftcode').value.trim().toUpperCase();
-  if(code==='ADMINPHONG'){
-    users[currentUser].pcoin+=100000000;
-    addHistory('Admincode',0,100000000);
-    alert('Nhận +100 triệu Pcoin!');
-    return;
-  }
-  if(!/^PHONGCARD\d{3}$/.test(code)){document.getElementById('gift-result').innerText='Code không hợp lệ'; return;}
-  if(users[currentUser].history.find(h=>h.event==='Giftcode '+code)){document.getElementById('gift-result').innerText='Code đã dùng'; return;}
-  users[currentUser].spinCount = (users[currentUser].spinCount||0)+1;
-  addHistory('Giftcode '+code,0,0);
-  document.getElementById('gift-result').innerText='Nhận +1 lượt quay thành công!';
-});
+// ===== Câu cá =====
+const fish = document.getElementById('fish');
+const fishJumpBtn = document.getElementById('fish-jump');
+let fishPos=0, fishDir=1, fishInterval=null;
+fishInterval = setInterval(()=>{
+  fishPos+=fishDir*3;
+  if(fishPos>260 || fishPos<0) fishDir*=-1;
+  fish.style.left=fishPos+'px';
+},50);
 
-// ===== Spin =====
-document.getElementById('spin-btn').addEventListener('click', ()=>{
-  if((users[currentUser].spinCount||0)<1){alert('Không còn lượt quay'); return;}
-  users[currentUser].spinCount--;
-  let h=0;
-  const rand=Math.random();
-  let result='';
-  if(rand<0.5){h=10; result='Bạn nhận 10 Pcoin';}
-  else if(rand<0.8){h=30; result='Bạn nhận 30 Pcoin';}
-  else{h=50; result='Bạn nhận 50 Pcoin';}
-  users[currentUser].pcoin+=h;
-  addHistory('Vòng quay',0,h);
-  document.getElementById('spin-result').innerText=result;
-  document.getElementById('ting-sound').play();
-});
-
-// ===== Kiếm tiền (Câu cá/Xúc xắc/Kéo bò) =====
-const ting = document.getElementById('ting-sound');
-function playAnimation(text,target){
-  let frame=0;
-  const anim=['|','/','-','\\'];
-  const interval=setInterval(()=>{
-    target.innerText=anim[frame%4]+' '+text;
-    frame++;
-    if(frame>7) clearInterval(interval);
-  },100);
-}
-
-// Câu cá: thêm thanh cá
-document.getElementById('fish-btn').addEventListener('click', ()=>{
+fishJumpBtn.addEventListener('click', ()=>{
   if(users[currentUser].pcoin<5){alert('Không đủ Pcoin'); return;}
   users[currentUser].pcoin-=5;
-  const bar = document.getElementById('fish-bar');
-  let pos=0; let dir=1;
-  const fishInterval=setInterval(()=>{
-    pos+=dir*5;
-    if(pos>100 || pos<0) dir*=-1;
-    bar.style.width=pos+'%';
-  },50);
-  setTimeout(()=>{
-    clearInterval(fishInterval);
-    const hit = Math.random()<0.6 ? true:false;
-    let h=0,result='';
-    if(hit){
-      const r=Math.random();
-      if(r<0.5){result='Cá nhỏ +2 Pcoin'; h=2;}
-      else if(r<0.8){result='Cá to +10 Pcoin'; h=10;}
-      else{result='Cá hiếm +20 Pcoin'; h=20;}
-    } else {result='Ra rác, không được gì'; h=0;}
-    users[currentUser].pcoin+=h;
-    addHistory('Câu cá',0,h);
-    document.getElementById('game-result').innerText=result;
-    playAnimation(result, document.getElementById('game-animation'));
-    ting.play();
-    bar.style.width='0%';
-  },3000);
+  let reward=0;
+  if(fishPos>120 && fishPos<180) reward=Math.floor(Math.random()*15)+5;
+  addHistory('Câu cá',0,reward);
+  document.getElementById('fish-result').innerText=reward>0?`Bắt được cá +${reward} Pcoin`:'Trượt, không được gì';
+  updateDash();
 });
 
-// Xúc xắc
-document.getElementById('dice-btn').addEventListener('click', ()=>{
-  if(users[currentUser].pcoin<3){alert('Không đủ Pcoin'); return;}
-  users[currentUser].pcoin-=3;
-  const r=Math.random();
-  let h=0,result='';
-  if(r<0.4){result='Thua, +1 Pcoin'; h=1;}
-  else{result='Thắng, +5 Pcoin'; h=5;}
-  users[currentUser].pcoin+=h;
-  addHistory('Tung xúc xắc',0,h);
-  document.getElementById('game-result').innerText=result;
-  playAnimation(result, document.getElementById('game-animation'));
-  ting.play();
-});
-
-// Kéo bò (ấn liên tục 2s)
-document.getElementById('cow-btn').addEventListener('click', ()=>{
+// ===== Kéo bò =====
+const cowBtn=document.getElementById('cow-btn');
+const cowResult=document.getElementById('cow-result');
+cowBtn.addEventListener('click', ()=>{
   if(users[currentUser].pcoin<15){alert('Không đủ Pcoin'); return;}
   users[currentUser].pcoin-=15;
   let clicks=0;
   const clickHandler=()=>{clicks++;}
-  document.getElementById('cow-btn').addEventListener('click', clickHandler);
+  cowBtn.addEventListener('click', clickHandler);
   setTimeout(()=>{
-    document.getElementById('cow-btn').removeEventListener('click', clickHandler);
-    let h=0,result='';
-    if(clicks>=20){h=50; result='Bò to +50 Pcoin';}
-    else if(clicks>=10){h=20; result='Bò nhỏ +20 Pcoin';}
-    else {h=0; result='Không trúng';}
-    users[currentUser].pcoin+=h;
-    addHistory('Kéo bò',0,h);
-    document.getElementById('game-result').innerText=result;
-    playAnimation(result, document.getElementById('game-animation'));
-    ting.play();
+    cowBtn.removeEventListener('click', clickHandler);
+    let reward=0;
+    if(clicks>=20) reward=50;
+    else if(clicks>=10) reward=20;
+    addHistory('Kéo bò',0,reward);
+    cowResult.innerText=reward>0?`Nhận ${reward} Pcoin`:'Không trúng';
+    updateDash();
   },2000);
 });
 
-// ===== Đổi Pcoin =====
-document.getElementById('exchange-btn').addEventListener('click', ()=>{
-  const amt = parseInt(document.getElementById('exchange-amount').value);
-  if(!amt || amt>users[currentUser].pcoin){alert('Số Pcoin không hợp lệ'); return;}
-  const vnd = Math.floor(amt/10000);
-  users[currentUser].pcoin-=amt;
-  addHistory('Đổi Pcoin',0,-amt);
-  localStorage.setItem('users', JSON.stringify(users));
-  const overlay = document.getElementById('overlay');
-  document.getElementById('overlay-text').innerText=`Tài khoản: ${currentUser}\nĐổi Pcoin: ${amt} → ${vnd} VNĐ\nNgày giờ: ${new Date().toLocaleString()}`;
-  overlay.style.display='flex';
+// ===== Nối từ =====
+let usedWords=[];
+let wordCount=0;
+const vietWords=["tôi","bạn","của","là","đẹp","nhất","vui","học","trường","trẻ","em","chị","anh","mẹ","bố"]; // Đây chỉ demo, thay thế bằng tất cả từ tiếng Việt
+const wordInput=document.getElementById('word-input');
+const wordResult=document.getElementById('word-result');
+const wordCountSpan=document.getElementById('word-count');
+
+function resetWordGame(){
+  if(users[currentUser].pcoin<60){alert('Không đủ Pcoin'); return;}
+  users[currentUser].pcoin-=60;
+  addHistory('Nối từ phí chơi',0,-60);
+  usedWords=[];
+  wordCount=0;
+  wordCountSpan.innerText=wordCount;
+  wordResult.innerText='';
+}
+
+document.getElementById('word-submit').addEventListener('click', ()=>{
+  const w=wordInput.value.trim().toLowerCase();
+  if(!w){alert('Nhập từ'); return;}
+  if(usedWords.includes(w)){wordResult.innerText='Từ đã dùng'; return;}
+  if(!vietWords.includes(w)){wordResult.innerText='Từ không hợp lệ'; return;}
+  usedWords.push(w);
+  wordCount++;
+  wordCountSpan.innerText=wordCount;
+  wordResult.innerText='Hợp lệ!';
+  if(wordCount%40===0){
+    users[currentUser].pcoin+=20;
+    addHistory('Nối từ thưởng 40 lần',0,20);
+    wordResult.innerText+=' +20 Pcoin!';
+  }
   updateDash();
-});
-document.getElementById('overlay-btn').addEventListener('click', ()=>{
-  document.getElementById('overlay').style.display='none';
+  // Hệ thống nối tiếp (chọn random từ từ vietWords)
+  let auto=wietWords[Math.floor(Math.random()*vietWords.length)];
+  usedWords.push(auto);
+  wordResult.innerText+=' | Hệ thống nối: '+auto;
 });
 
 updateDash();
 </script>
 </body>
-  </html>
+                                                  </html>
